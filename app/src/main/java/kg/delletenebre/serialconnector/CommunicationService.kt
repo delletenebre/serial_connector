@@ -79,7 +79,7 @@ class CommunicationService : Service() {
     }
 
     private fun updateNotification() {
-        val usbConnections = usbCommunication.connectedDevices
+        val usbConnections = usbCommunication.connectionsCount
         notificationBuilder.setContentTitle("USB: $usbConnections")// • BT: 0 • WS: 999")
 
         // startForeground(NOTIFICATION_ID, notificationBuilder.build())
