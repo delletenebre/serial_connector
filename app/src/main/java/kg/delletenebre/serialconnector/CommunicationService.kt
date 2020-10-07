@@ -1,15 +1,13 @@
 package kg.delletenebre.serialconnector
 
-import android.app.Notification
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.Service
+import android.app.*
 import android.content.Intent
 import android.os.Build
 import android.os.IBinder
 import android.util.Log.d
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 
 
 class CommunicationService : Service() {
@@ -25,10 +23,15 @@ class CommunicationService : Service() {
             ""
         }
 
-        NotificationCompat.Builder(this, channelId)
-            .setOngoing(true)
-            .setSmallIcon(R.drawable.ic_notification)
-            .setCategory(NotificationCompat.CATEGORY_SERVICE)
+        val intent = Intent(this, SettingsActivity::class.java)
+        val pendingIntent = PendingIntent.getActivity(this, 0, intent,0)
+
+        NotificationCompat.Builder(this, channelId).apply {
+            setContentIntent(pendingIntent)
+            setOngoing(true)
+            setSmallIcon(R.drawable.ic_notification)
+            setCategory(NotificationCompat.CATEGORY_SERVICE)
+        }
     }
 
     private val usbCommunication: UsbCommunication by lazy {
@@ -83,12 +86,22 @@ class CommunicationService : Service() {
         notificationBuilder.setContentTitle("USB: $usbConnections")// • BT: 0 • WS: 999")
 
         // startForeground(NOTIFICATION_ID, notificationBuilder.build())
-        notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build())
+
+        with(NotificationManagerCompat.from(this)) {
+            notify(NOTIFICATION_ID, notificationBuilder.build())
+        }
+        //notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build())
     }
 
     companion object {
+        private const val APP_ID = BuildConfig.APPLICATION_ID
+        const val ACTION_CONNECTION_ESTABLISHED = "$APP_ID.ACTION_CONNECTION_ESTABLISHED"
+        const val ACTION_DATA_RECEIVED = "$APP_ID.ACTION_DATA_RECEIVED"
+
+
         const val EXTRA_RESTART_SERVICE = "restart_service"
         const val EXTRA_UPDATE_USB_CONNECTION = "update_usb_connection"
+
         private const val NOTIFICATION_ID = 255
     }
 }

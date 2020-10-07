@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <bool name="pref_default_start_on_boot_completed">true</bool>
+    <bool name="pref_default_restart_when_screen_on">true</bool>
+    <bool name="pref_default_stop_when_screen_off">true</bool>
+</resources>

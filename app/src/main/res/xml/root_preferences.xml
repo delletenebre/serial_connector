@@ -1,4 +1,5 @@
-<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <Preference
         app:key="restart_service"
@@ -7,10 +8,38 @@
 
     <PreferenceCategory app:title="@string/messages_header">
 
-        <EditTextPreference
-            app:key="signature"
-            app:title="@string/signature_title"
-            app:useSimpleSummaryProvider="true" />
+        <SwitchPreferenceCompat
+            app:key="start_on_boot_completed"
+            app:title="Автозапуск при загрузке системы"
+            app:defaultValue="@bool/pref_default_start_on_boot_completed" />
+
+        <SeekBarPreference
+            app:key="start_on_boot_completed_delay"
+            android:dependency="start_on_boot_completed"
+            app:title="Задержка запуска после загрузки системы"
+            app:showSeekBarValue="true"
+            app:defaultValue="@integer/pref_default_start_on_boot_completed_delay"
+            app:min="0"
+            android:max="60" />
+
+        <SwitchPreferenceCompat
+            app:key="restart_when_screen_on"
+            app:title="Перезапуск при включении экрана"
+            app:defaultValue="@bool/pref_default_restart_when_screen_on" />
+
+        <SeekBarPreference
+            app:key="restart_when_screen_on_delay"
+            android:dependency="restart_when_screen_on"
+            app:title="Задержка перезапуска после включения экрана"
+            app:showSeekBarValue="true"
+            app:defaultValue="@integer/pref_default_restart_when_screen_on_delay"
+            app:min="0"
+            android:max="60" />
+
+        <SwitchPreferenceCompat
+            app:key="stop_when_screen_off"
+            app:title="Завершить при отключении экрана"
+            app:defaultValue="@bool/pref_default_stop_when_screen_off" />
 
         <ListPreference
             app:defaultValue="reply"
