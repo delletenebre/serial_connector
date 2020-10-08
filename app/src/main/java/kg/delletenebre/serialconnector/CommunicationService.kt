@@ -1,11 +1,7 @@
 package kg.delletenebre.serialconnector
 
 import android.app.*
-import android.content.BroadcastReceiver
-import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
-import android.hardware.usb.UsbManager
 import android.os.Binder
 import android.os.Build
 import android.os.IBinder
@@ -118,7 +114,7 @@ class CommunicationService : Service() {
 
     override fun onDestroy() {
         d("ok", "onDestroy")
-        usbCommunication.disconnectAll()
+        usbCommunication.destroy()
         super.onDestroy()
     }
 

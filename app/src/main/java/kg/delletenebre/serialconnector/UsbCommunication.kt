@@ -1,8 +1,6 @@
 package kg.delletenebre.serialconnector
 
-import android.app.NotificationManager
 import android.app.PendingIntent
-import android.app.Service
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -23,13 +21,19 @@ class UsbCommunication(private val context: Context, private val usbEvents: UsbE
 
     var connections = mutableMapOf<String, UsbSerialDevice>()
 
+    private val usbManager: UsbManager by lazy {
+        context.getSystemService(Context.USB_SERVICE) as UsbManager
+    }
+
     private val broadcastReceiver: BroadcastReceiver by lazy {
         object : BroadcastReceiver() {
             override fun onReceive(context: Context, intent: Intent) {
                 when (intent.action) {
                     UsbManager.ACTION_USB_DEVICE_DETACHED -> {
                         val usbDevice: UsbDevice? = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE)
-                        disconnect(usbDevice?.deviceName ?: "")
+                        usbDevice?.apply {
+                            disconnect(this.deviceName)
+                        }
                     }
 
                     ACTION_USB_PERMISSION -> {
@@ -46,35 +50,34 @@ class UsbCommunication(private val context: Context, private val usbEvents: UsbE
             }
         }
     }
-    private val usbManager: UsbManager by lazy {
-        context.getSystemService(Context.USB_SERVICE) as UsbManager
-    }
+
     private val permissionIntent = PendingIntent.getBroadcast(
         context,
         0,
         Intent(ACTION_USB_PERMISSION),
         0
     )
-    private var baudRate = App.instance.getPreference("usb_connection_baud_rate").toInt()
-    private var dataBits = App.instance.getPreference("usb_connection_data_bits").toInt()
-    private var parity = App.instance.getPreference("usb_connection_parity").toInt()
-    private var stopBits = App.instance.getPreference("usb_connection_stop_bits").toInt()
-    private var flowControl = App.instance.getPreference("usb_connection_flow_control").toInt()
 
+    private var baudRate = getIntegerPreference("usb_connection_baud_rate")
+    private var dataBits = getIntegerPreference("usb_connection_data_bits")
+    private var parity = getIntegerPreference("usb_connection_parity")
+    private var stopBits = getIntegerPreference("usb_connection_stop_bits")
+    private var flowControl = getIntegerPreference("usb_connection_flow_control")
 
     init {
         IntentFilter().also { intentFilter ->
             intentFilter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED)
+            intentFilter.addAction(ACTION_USB_PERMISSION)
             context.registerReceiver(broadcastReceiver, intentFilter)
         }
     }
 
     fun connect() {
-        baudRate = App.instance.getPreference("usb_connection_baud_rate").toInt()
-        dataBits = App.instance.getPreference("usb_connection_data_bits").toInt()
-        parity = App.instance.getPreference("usb_connection_parity").toInt()
-        stopBits = App.instance.getPreference("usb_connection_stop_bits").toInt()
-        flowControl = App.instance.getPreference("usb_connection_flow_control").toInt()
+        baudRate = getIntegerPreference("usb_connection_baud_rate")
+        dataBits = getIntegerPreference("usb_connection_data_bits")
+        parity = getIntegerPreference("usb_connection_parity")
+        stopBits = getIntegerPreference("usb_connection_stop_bits")
+        flowControl = getIntegerPreference("usb_connection_flow_control")
 
         usbManager.deviceList.values.forEach { usbDevice ->
             usbManager.requestPermission(usbDevice, permissionIntent)
@@ -89,11 +92,14 @@ class UsbCommunication(private val context: Context, private val usbEvents: UsbE
         }
     }
 
-    fun disconnectAll() {
+    fun destroy() {
         connections.values.forEach {
             disconnect(it.portName)
         }
+        context.unregisterReceiver(broadcastReceiver)
     }
+
+    private fun getIntegerPreference(key: String) = App.instance.getPreference(key).toInt()
 
     private fun connectTo(usbDevice: UsbDevice) {
         try {
