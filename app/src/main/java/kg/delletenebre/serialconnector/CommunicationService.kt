@@ -8,6 +8,7 @@ import android.util.Log.d
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import kg.delletenebre.serialconnector.ui.SettingsActivity
 
 
 class CommunicationService : Service() {
@@ -24,7 +25,7 @@ class CommunicationService : Service() {
         }
 
         val intent = Intent(this, SettingsActivity::class.java)
-        val pendingIntent = PendingIntent.getActivity(this, 0, intent,0)
+        val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
 
         NotificationCompat.Builder(this, channelId).apply {
             setContentIntent(pendingIntent)

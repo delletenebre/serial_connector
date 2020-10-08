@@ -1,11 +1,17 @@
 <resources>
+    <string name="pref_default_usb_connection_baud_rate">115200</string>
+    <string name="pref_default_usb_connection_data_bits">8</string>
+    <string name="pref_default_usb_connection_parity">1</string>
+    <string name="pref_default_usb_connection_stop_bits">1</string>
+    <string name="pref_default_usb_connection_flow_control">0</string>
+
     <string name="app_name">Serial Connector</string>
     <!-- Settings Activity Title -->
     <string name="title_activity_settings">Settings</string>
 
     <!-- Preference Titles -->
     <string name="messages_header">Messages</string>
-    <string name="sync_header">Sync</string>
+    <string name="usb_connections_header">USB connection</string>
 
     <!-- Messages Preferences -->
     <string name="signature_title">Your signature</string>

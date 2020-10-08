@@ -1,10 +1,12 @@
-package kg.delletenebre.serialconnector
+package kg.delletenebre.serialconnector.ui
 
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
+import kg.delletenebre.serialconnector.CommunicationService
+import kg.delletenebre.serialconnector.R
 
 
 class SettingsActivity : AppCompatActivity() {

@@ -9,4 +9,48 @@
         <item>reply</item>
         <item>reply_all</item>
     </string-array>
+    
+    <string-array name="usb_connection_parity_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+    </string-array>
+
+    <string-array name="usb_connection_parity_entries">
+        <item>None</item>
+        <item>Odd</item>
+        <item>Even</item>
+        <item>Mark</item>
+        <item>Space</item>
+    </string-array>
+
+    <string-array name="usb_connection_stop_bits_values">
+        <item>1</item>
+        <item>3</item>
+        <item>2</item>
+    </string-array>
+
+    <string-array name="usb_connection_stop_bits_entries">
+        <item>1</item>
+        <item>1.5</item>
+        <item>2</item>
+    </string-array>
+
+    <string-array name="usb_connection_flow_control_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
+
+    <string-array name="usb_connection_flow_control_entries">
+        <item>Off</item>
+        <item>RTS-CTS</item>
+        <item>DSR-DTR</item>
+        <item>XON-XOFF</item>
+    </string-array>
+
+
 </resources>

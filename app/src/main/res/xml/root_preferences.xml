@@ -51,18 +51,49 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory app:title="@string/sync_header">
+    <PreferenceCategory app:title="@string/usb_connections_header">
 
-        <SwitchPreferenceCompat
-            app:key="sync"
-            app:title="@string/sync_title" />
+        <EditTextPreference
+            app:key="usb_connection_baud_rate"
+            app:title="Скорость соединения"
+            app:useSimpleSummaryProvider="true"
+            app:defaultValue="@string/pref_default_usb_connection_baud_rate"
+            android:inputType="number"/>
 
-        <SwitchPreferenceCompat
-            app:dependency="sync"
-            app:key="attachment"
-            app:summaryOff="@string/attachment_summary_off"
-            app:summaryOn="@string/attachment_summary_on"
-            app:title="@string/attachment_title" />
+        <SeekBarPreference
+            app:key="usb_connection_data_bits"
+            app:title="Data bits"
+            app:showSeekBarValue="true"
+            app:defaultValue="@string/pref_default_usb_connection_data_bits"
+            app:min="5"
+            android:max="8" />
+
+        <ListPreference
+            app:key="usb_connection_parity"
+            app:defaultValue="@string/pref_default_usb_connection_parity"
+            app:entries="@array/usb_connection_parity_entries"
+            app:entryValues="@array/usb_connection_parity_values"
+
+            app:title="Parity (контроль чётности)"
+            app:useSimpleSummaryProvider="true" />
+
+        <ListPreference
+            app:key="usb_connection_stop_bits"
+            app:defaultValue="@string/pref_default_usb_connection_stop_bits"
+            app:entries="@array/usb_connection_stop_bits_entries"
+            app:entryValues="@array/usb_connection_stop_bits_values"
+
+            app:title="Stop bits"
+            app:useSimpleSummaryProvider="true" />
+
+        <ListPreference
+            app:key="usb_connection_flow_control"
+            app:defaultValue="@string/pref_default_usb_connection_flow_control"
+            app:entries="@array/usb_connection_flow_control_entries"
+            app:entryValues="@array/usb_connection_flow_control_values"
+
+            app:title="Flow control"
+            app:useSimpleSummaryProvider="true" />
 
     </PreferenceCategory>
 

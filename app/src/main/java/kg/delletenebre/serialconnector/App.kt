@@ -45,14 +45,20 @@ class App : Application() {
         return getIntPreference(key, defaultValue)
     }
 
-    fun getStringPreference(key: String, defaultValue: String)
-            = prefs.getString(key, defaultValue) ?: ""
+    fun getPreference(key: String, defaultValue: String): String {
+        try {
+            return prefs.getString(key, defaultValue) ?: ""
+        } catch (ex: RuntimeException) {
+            return prefs.getInt(key, defaultValue.toInt()).toString()
+        }
 
-    fun getStringPreference(key: String): String {
+    }
+
+    fun getPreference(key: String): String {
         val defaultValue = resources.getString(
             Utils.getStringIdentifier(this, "pref_default_$key")
         )
-        return getStringPreference(key, defaultValue)
+        return getPreference(key, defaultValue)
     }
 
     companion object {

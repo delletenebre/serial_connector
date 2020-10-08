@@ -1,10 +1,11 @@
-package kg.delletenebre.serialconnector
+package kg.delletenebre.serialconnector.ui
 
 import android.app.Activity
 import android.content.Intent
 import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbManager
 import android.os.Bundle
+import kg.delletenebre.serialconnector.CommunicationService
 
 class UsbDeviceAttachActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {

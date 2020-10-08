@@ -2,19 +2,29 @@ package kg.delletenebre.serialconnector
 
 import android.content.Context
 import android.content.Intent
-import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbManager
 import android.util.Log
 import com.felhr.usbserial.UsbSerialDevice
-import com.felhr.usbserial.UsbSerialInterface
-import java.io.ByteArrayOutputStream
-import java.lang.Exception
 
 
 class UsbCommunication(private val context: Context) {
     var connectionsCount = 0
 
     fun connect() {
+        val baudRate = App.instance.getPreference("usb_connection_baud_rate").toInt()
+        val dataBits = App.instance.getPreference("usb_connection_data_bits").toInt()
+        val parity = App.instance.getPreference("usb_connection_parity").toInt()
+        val stopBits = App.instance.getPreference("usb_connection_stop_bits").toInt()
+        val flowControl = App.instance.getPreference("usb_connection_flow_control").toInt()
+
+        Log.d(">>>>>>>>>>>", baudRate.toString())
+        Log.d(">>>>>>>>>>>", dataBits.toString())
+        Log.d(">>>>>>>>>>>", parity.toString())
+        Log.d(">>>>>>>>>>>", stopBits.toString())
+        Log.d(">>>>>>>>>>>", flowControl.toString())
+
+
+
         val usbManager = context.getSystemService(Context.USB_SERVICE) as UsbManager
         for (usbDevice in usbManager.deviceList.values) {
             if (usbManager.hasPermission(usbDevice)) {
@@ -24,10 +34,11 @@ class UsbCommunication(private val context: Context) {
 
                     serialDevice = UsbSerialDevice.createUsbSerialDevice(usbDevice, connection)
                     if (serialDevice.open()) {
-                        serialDevice.setBaudRate(115200)
-                        serialDevice.setDataBits(UsbSerialInterface.DATA_BITS_8)
-                        serialDevice.setParity(UsbSerialInterface.PARITY_ODD)
-                        serialDevice.setFlowControl(UsbSerialInterface.FLOW_CONTROL_OFF)
+                        serialDevice.setBaudRate(baudRate)
+                        serialDevice.setDataBits(dataBits)
+                        serialDevice.setParity(parity)
+                        serialDevice.setStopBits(stopBits)
+                        serialDevice.setFlowControl(flowControl)
 
                         val deviceName = usbDevice.deviceName
 //                        if (buffer.containsKey(deviceName)) {
