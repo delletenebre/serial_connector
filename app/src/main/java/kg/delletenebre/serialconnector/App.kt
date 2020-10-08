@@ -21,6 +21,7 @@ class App : Application() {
         IntentFilter().also { intentFilter ->
             intentFilter.addAction(Intent.ACTION_SCREEN_ON)
             intentFilter.addAction(Intent.ACTION_SCREEN_OFF)
+
             registerReceiver(EventsReceiver(), intentFilter)
         }
     }
@@ -46,12 +47,11 @@ class App : Application() {
     }
 
     fun getPreference(key: String, defaultValue: String): String {
-        try {
-            return prefs.getString(key, defaultValue) ?: ""
+        return try {
+            prefs.getInt(key, defaultValue.toInt()).toString()
         } catch (ex: RuntimeException) {
-            return prefs.getInt(key, defaultValue.toInt()).toString()
+            prefs.getString(key, defaultValue) ?: ""
         }
-
     }
 
     fun getPreference(key: String): String {

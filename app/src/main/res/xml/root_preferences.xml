@@ -41,17 +41,9 @@
             app:title="Завершить при отключении экрана"
             app:defaultValue="@bool/pref_default_stop_when_screen_off" />
 
-        <ListPreference
-            app:defaultValue="reply"
-            app:entries="@array/reply_entries"
-            app:entryValues="@array/reply_values"
-            app:key="reply"
-            app:title="@string/reply_title"
-            app:useSimpleSummaryProvider="true" />
-
     </PreferenceCategory>
 
-    <PreferenceCategory app:title="@string/usb_connections_header">
+    <PreferenceCategory app:title="USB соединение" app:icon="@drawable/ic_usb">
 
         <EditTextPreference
             app:key="usb_connection_baud_rate"
@@ -95,6 +87,9 @@
             app:title="Flow control"
             app:useSimpleSummaryProvider="true" />
 
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="Bluetooth соединение" app:icon="@drawable/ic_bluetooth">
     </PreferenceCategory>
 
 </PreferenceScreen>
