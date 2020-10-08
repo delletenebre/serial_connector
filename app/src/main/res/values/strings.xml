@@ -4,6 +4,7 @@
     <string name="pref_default_usb_connection_parity">1</string>
     <string name="pref_default_usb_connection_stop_bits">1</string>
     <string name="pref_default_usb_connection_flow_control">0</string>
+    <string name="pref_default_usb_connection_filter">/dev/bus/usb/</string>
 
     <string name="app_name">Serial Connector</string>
     <!-- Settings Activity Title -->

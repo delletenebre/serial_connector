@@ -89,12 +89,12 @@ class CommunicationService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        if (intent != null) {
-            if (intent.getBooleanExtra(EXTRA_RESTART_SERVICE, false)) {
+        intent?.let {
+            if (it.getBooleanExtra(EXTRA_RESTART_SERVICE, false)) {
                 d("ok", "EXTRA_RESTART_SERVICE")
             }
 
-            if (intent.getBooleanExtra(EXTRA_UPDATE_USB_CONNECTION, false)) {
+            if (it.getBooleanExtra(EXTRA_UPDATE_USB_CONNECTION, false)) {
                 d("ok", "EXTRA_UPDATE_USB_CONNECTION")
                 usbCommunication.connect()
                 updateNotification()

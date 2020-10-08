@@ -31,8 +31,8 @@ class UsbCommunication(private val context: Context, private val usbEvents: UsbE
                 when (intent.action) {
                     UsbManager.ACTION_USB_DEVICE_DETACHED -> {
                         val usbDevice: UsbDevice? = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE)
-                        usbDevice?.apply {
-                            disconnect(this.deviceName)
+                        usbDevice?.let {
+                            disconnect(it.deviceName)
                         }
                     }
 
@@ -40,8 +40,11 @@ class UsbCommunication(private val context: Context, private val usbEvents: UsbE
                         synchronized(this) {
                             val device: UsbDevice? = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE)
                             if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
-                                device?.apply {
-                                    connectTo(this)
+                                device?.let { usbDevice ->
+                                    val filterMatch = deviceNameFilter.find(usbDevice.deviceName)
+                                    filterMatch?.let {
+                                        connectTo(usbDevice)
+                                    }
                                 }
                             }
                         }
@@ -63,6 +66,7 @@ class UsbCommunication(private val context: Context, private val usbEvents: UsbE
     private var parity = getIntegerPreference("usb_connection_parity")
     private var stopBits = getIntegerPreference("usb_connection_stop_bits")
     private var flowControl = getIntegerPreference("usb_connection_flow_control")
+    private val deviceNameFilter = App.instance.getPreference("usb_connection_filter").toRegex()
 
     init {
         IntentFilter().also { intentFilter ->
@@ -117,7 +121,7 @@ class UsbCommunication(private val context: Context, private val usbEvents: UsbE
                 serialDevice.portName = deviceName
 
 
-//                        if (buffer.containsKey(deviceName)) {
+//                        if (connections.containsKey(deviceName)) {
 //                            return;
 //                        }
 

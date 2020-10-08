@@ -50,7 +50,7 @@
             app:title="Скорость соединения"
             app:useSimpleSummaryProvider="true"
             app:defaultValue="@string/pref_default_usb_connection_baud_rate"
-            android:inputType="number"/>
+            android:inputType="number" />
 
         <SeekBarPreference
             app:key="usb_connection_data_bits"
@@ -86,6 +86,12 @@
 
             app:title="Flow control"
             app:useSimpleSummaryProvider="true" />
+
+        <EditTextPreference
+            app:key="usb_connection_filter"
+            app:title="Фильтр по названию"
+            app:useSimpleSummaryProvider="true"
+            app:defaultValue="@string/pref_default_usb_connection_filter" />
 
     </PreferenceCategory>
 
