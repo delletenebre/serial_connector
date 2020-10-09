@@ -148,8 +148,8 @@ class CommunicationService : Service() {
 
     companion object {
         private const val APP_ID = BuildConfig.APPLICATION_ID
-        const val ACTION_CONNECTION_LOST = "$APP_ID.ACTION_CONNECTION_LOST"
         const val ACTION_CONNECTION_ESTABLISHED = "$APP_ID.ACTION_CONNECTION_ESTABLISHED"
+        const val ACTION_CONNECTION_LOST = "$APP_ID.ACTION_CONNECTION_LOST"
         const val ACTION_DATA_RECEIVED = "$APP_ID.ACTION_DATA_RECEIVED"
 
 

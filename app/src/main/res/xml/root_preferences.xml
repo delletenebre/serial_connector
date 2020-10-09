@@ -6,6 +6,11 @@
         app:icon="@drawable/ic_restart"
         app:title="Перезапустить сервис" />
 
+    <Preference
+        app:key="logs"
+        app:icon="@drawable/ic_restart"
+        app:title="Просмотр логов" />
+
     <PreferenceCategory app:title="@string/messages_header">
 
         <SwitchPreferenceCompat

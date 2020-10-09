@@ -139,7 +139,12 @@ class UsbConnection(private val context: Context, private val usbEvents: UsbEven
 
                 serialDevice.read { bytes ->
                     if (bytes.isNotEmpty()) {
-                        usbEvents.onData(serialDevice, bytes.toString(Charsets.UTF_8))
+                        if (bytes.size > 1024) {
+                            disconnect(deviceName)
+                        } else {
+                            usbEvents.onData(serialDevice, bytes.toString(Charsets.UTF_8))
+                        }
+
 //                                if (buffer != null) {
 //                                    buffer.write(bytes)
 //                                    if (buffer.toByteArray().contains(0x0A)) {
