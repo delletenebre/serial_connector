@@ -18,6 +18,10 @@ class BluetoothConnection(private val bluetoothEvents: BluetoothEvents) {
     private val bluetoothManager: BluetoothManager = BluetoothManager.getInstance()
     private lateinit var deviceInterface: SimpleBluetoothDeviceInterface
 
+    init {
+
+    }
+
     fun connect() {
         val selectedMac = App.instance.getPreference("bluetooth_device", "")
         if (selectedMac.isNotEmpty()) {
