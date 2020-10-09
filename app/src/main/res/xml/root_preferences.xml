@@ -101,6 +101,11 @@
     </PreferenceCategory>
 
     <PreferenceCategory app:title="Bluetooth соединение" app:icon="@drawable/ic_bluetooth">
+        <kg.delletenebre.serialconnector.views.BluetoothDevicesListPreference
+            app:key="bluetooth_device"
+            app:defaultValue=""
+            app:useSimpleSummaryProvider="true"
+            app:title="@string/pref_title_bluetooth_device" />
     </PreferenceCategory>
 
 </PreferenceScreen>

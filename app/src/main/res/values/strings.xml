@@ -1,10 +1,15 @@
 <resources>
-    <string name="pref_default_usb_connection_baud_rate">115200</string>
-    <string name="pref_default_usb_connection_data_bits">8</string>
-    <string name="pref_default_usb_connection_parity">0</string>
-    <string name="pref_default_usb_connection_stop_bits">1</string>
-    <string name="pref_default_usb_connection_flow_control">0</string>
-    <string name="pref_default_usb_connection_filter">^/dev/bus/usb/</string>
+    <string name="pref_default_usb_connection_baud_rate" translatable="false">115200</string>
+    <string name="pref_default_usb_connection_data_bits" translatable="false">8</string>
+    <string name="pref_default_usb_connection_parity" translatable="false">0</string>
+    <string name="pref_default_usb_connection_stop_bits" translatable="false">1</string>
+    <string name="pref_default_usb_connection_flow_control" translatable="false">0</string>
+    <string name="pref_default_usb_connection_filter" translatable="false">^/dev/bus/usb/</string>
 
-    <string name="app_name">Serial Connector</string>
+
+    <string name="app_name" translatable="false">Serial Connector</string>
+
+    <!-- Preferences -->
+    <string name="no_device">No device</string>
+    <string name="pref_title_bluetooth_device">Bluetooth device</string>
 </resources>

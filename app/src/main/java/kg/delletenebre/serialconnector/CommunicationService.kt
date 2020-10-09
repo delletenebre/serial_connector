@@ -12,6 +12,8 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.felhr.usbserial.UsbSerialDevice
+import kg.delletenebre.serialconnector.connections.BluetoothConnection
+import kg.delletenebre.serialconnector.connections.BluetoothEvents
 import kg.delletenebre.serialconnector.connections.UsbConnection
 import kg.delletenebre.serialconnector.connections.UsbEvents
 import kg.delletenebre.serialconnector.ui.SettingsActivity
@@ -73,7 +75,7 @@ class CommunicationService : Service() {
                 updateNotification()
             }
 
-            override fun onData(serialDevice: UsbSerialDevice, data: String) {
+            override fun onMessageReceived(serialDevice: UsbSerialDevice, data: String) {
                 Intent().also { intent ->
                     intent.action = ACTION_DATA_RECEIVED
                     intent.putExtra("connectionType", "usb")
@@ -83,6 +85,43 @@ class CommunicationService : Service() {
                 }
                 d(">>>", "connectionType: usb")
                 d(">>>", "portName: ${serialDevice.portName}")
+                d(">>>", "data: $data")
+            }
+        })
+    }
+
+    private val bluetoothConnection: BluetoothConnection by lazy {
+        BluetoothConnection(object : BluetoothEvents {
+            override fun onConnect(mac: String) {
+                Intent().also { intent ->
+                    intent.action = ACTION_CONNECTION_ESTABLISHED
+                    intent.putExtra("connectionType", "bluetooth")
+                    intent.putExtra("name", mac)
+                    sendBroadcast(intent)
+                }
+                updateNotification()
+            }
+
+            override fun onDisconnect(mac: String) {
+                Intent().also { intent ->
+                    intent.action = ACTION_CONNECTION_LOST
+                    intent.putExtra("connectionType", "bluetooth")
+                    intent.putExtra("name", mac)
+                    sendBroadcast(intent)
+                }
+                updateNotification()
+            }
+
+            override fun onMessageReceived(mac: String, data: String) {
+                Intent().also { intent ->
+                    intent.action = ACTION_DATA_RECEIVED
+                    intent.putExtra("connectionType", "bluetooth")
+                    intent.putExtra("name", mac)
+                    intent.putExtra("data", data)
+                    sendBroadcast(intent)
+                }
+                d(">>>", "connectionType: bluetooth")
+                d(">>>", "mac: $mac")
                 d(">>>", "data: $data")
             }
         })
@@ -108,15 +147,14 @@ class CommunicationService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        d("ok", "onCreate")
-
         usbConnection.connect()
+        bluetoothConnection.connect()
         updateNotification()
     }
 
     override fun onDestroy() {
-        d("ok", "onDestroy")
         usbConnection.destroy()
+        bluetoothConnection.destroy()
         super.onDestroy()
     }
 

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Preferences -->
+    <string name="no_device">Нет</string>
+    <string name="pref_title_bluetooth_device">Bluetooth устройство</string>
+</resources>

@@ -16,7 +16,7 @@ import kg.delletenebre.serialconnector.BuildConfig
 interface UsbEvents {
     fun onConnect(serialDevice: UsbSerialDevice)
     fun onDisconnect(deviceName: String)
-    fun onData(serialDevice: UsbSerialDevice, data: String)
+    fun onMessageReceived(serialDevice: UsbSerialDevice, data: String)
 }
 
 class UsbConnection(private val context: Context, private val usbEvents: UsbEvents) {
@@ -142,7 +142,7 @@ class UsbConnection(private val context: Context, private val usbEvents: UsbEven
                         if (bytes.size > 1024) {
                             disconnect(deviceName)
                         } else {
-                            usbEvents.onData(serialDevice, bytes.toString(Charsets.UTF_8))
+                            usbEvents.onMessageReceived(serialDevice, bytes.toString(Charsets.UTF_8))
                         }
 
 //                                if (buffer != null) {
