@@ -8,10 +8,10 @@
 
     <Preference
         app:key="logs"
-        app:icon="@drawable/ic_restart"
+        app:icon="@drawable/ic_messages"
         app:title="Просмотр логов" />
 
-    <PreferenceCategory app:title="@string/messages_header">
+    <PreferenceCategory app:title="Основные" app:icon="@drawable/ic_settings">
 
         <SwitchPreferenceCompat
             app:key="start_on_boot_completed"

@@ -22,17 +22,20 @@ class LogsActivity : AppCompatActivity() {
             override fun onReceive(context: Context, intent: Intent) {
                 when (intent.action) {
                     CommunicationService.ACTION_CONNECTION_ESTABLISHED -> {
+                        val connectionType = intent.getStringExtra("connectionType").toString()
                         val name = intent.getStringExtra("name").toString()
-                        addMessage("Соединение установлено | $name")
+                        addMessage("$connectionType\t\tсоединение установлено | $name")
                     }
                     CommunicationService.ACTION_CONNECTION_LOST -> {
+                        val connectionType = intent.getStringExtra("connectionType").toString()
                         val name = intent.getStringExtra("name").toString()
-                        addMessage("Соединение потеряно | $name")
+                        addMessage("$connectionType\t\tсоединение потеряно | $name")
                     }
                     CommunicationService.ACTION_DATA_RECEIVED -> {
+                        val connectionType = intent.getStringExtra("connectionType").toString()
                         val name = intent.getStringExtra("name").toString()
                         val data = intent.getStringExtra("data").toString()
-                        addMessage("Получены данные от $name\n\t\t\t\t\t\t\t$data")
+                        addMessage("$connectionType\t\tполучены данные от $name\n\t\t\t\t\t\t\t$data")
                     }
                 }
             }
@@ -80,7 +83,7 @@ class LogsActivity : AppCompatActivity() {
                 crlf = "\r\n"
             }
             logsView.append("$timestamp\t$message$crlf")
-            logsView.text = logsView.text // update text to apply lineheight
+            logsView.text = logsView.text // update text to apply line height
 
             val editable = logsView.editableText
             if (autoScrollCheckbox.isChecked) {

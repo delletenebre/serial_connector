@@ -47,7 +47,10 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".ui.LogsActivity" android:parentActivityName=".ui.SettingsActivity" />
+        <activity
+            android:name=".ui.LogsActivity"
+            android:label="Лог"
+            android:parentActivityName=".ui.SettingsActivity" />
 
         <activity
             android:name=".ui.UsbDeviceAttachActivity"
