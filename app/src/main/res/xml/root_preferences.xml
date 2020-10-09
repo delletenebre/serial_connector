@@ -54,7 +54,7 @@
 
         <SeekBarPreference
             app:key="usb_connection_data_bits"
-            app:title="Data bits"
+            app:title="Биты данных"
             app:showSeekBarValue="true"
             app:defaultValue="@string/pref_default_usb_connection_data_bits"
             app:min="5"
@@ -66,7 +66,7 @@
             app:entries="@array/usb_connection_parity_entries"
             app:entryValues="@array/usb_connection_parity_values"
 
-            app:title="Parity (контроль чётности)"
+            app:title="Бит чётности"
             app:useSimpleSummaryProvider="true" />
 
         <ListPreference
@@ -75,17 +75,17 @@
             app:entries="@array/usb_connection_stop_bits_entries"
             app:entryValues="@array/usb_connection_stop_bits_values"
 
-            app:title="Stop bits"
+            app:title="Стоповый бит"
             app:useSimpleSummaryProvider="true" />
 
-        <ListPreference
-            app:key="usb_connection_flow_control"
-            app:defaultValue="@string/pref_default_usb_connection_flow_control"
-            app:entries="@array/usb_connection_flow_control_entries"
-            app:entryValues="@array/usb_connection_flow_control_values"
+<!--        <ListPreference-->
+<!--            app:key="usb_connection_flow_control"-->
+<!--            app:defaultValue="@string/pref_default_usb_connection_flow_control"-->
+<!--            app:entries="@array/usb_connection_flow_control_entries"-->
+<!--            app:entryValues="@array/usb_connection_flow_control_values"-->
 
-            app:title="Flow control"
-            app:useSimpleSummaryProvider="true" />
+<!--            app:title="Управление потоком"-->
+<!--            app:useSimpleSummaryProvider="true" />-->
 
         <EditTextPreference
             app:key="usb_connection_filter"

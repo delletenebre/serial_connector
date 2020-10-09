@@ -120,6 +120,17 @@ class UsbCommunication(private val context: Context, private val usbEvents: UsbE
                 serialDevice.setFlowControl(flowControl)
                 serialDevice.portName = deviceName
 
+                /*
+                * `Управление потоком` (flow control) - Ранние устройства с UART могли быть настолько медлительными,
+                что не успевали обрабатывать поток принимаемых данных. Для решения этой проблемы модули UART иногда
+                снабжались отдельными выходами и входами управления потоком. При заполнении входного буфера логика
+                принимающего UART выставляла на соответствующем выходе запрещающий уровень, и передающий UART
+                приостанавливал передачу.
+                `Off` - управление потоком отключено.
+                `RTS-CTS` - аппаратный протокол RTS/CTS.
+                `DSR-DTR` - аппаратный протокол DSR/DTR.
+                `XON-XOFF` - программный протокол XOn/XOff.
+                */
 
 //                        if (connections.containsKey(deviceName)) {
 //                            return;
