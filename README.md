@@ -66,7 +66,20 @@ Broadcast Intent'ы:
   * Action: `kg.delletenebre.serialconnector.ACTION_CONNECTION_ESTABLISHED`
   * Extras:
     * `connectionType`: `usb`
-    * `portName`: 
+    * `name`: название устройства, например `/dev/bus/usb/001/002`
+    
+* При потере соединения (USB):
+  * Action: `kg.delletenebre.serialconnector.ACTION_CONNECTION_LOST`
+  * Extras:
+    * `connectionType`: `usb`
+    * `name`: название устройства, например `/dev/bus/usb/001/002`
+    
+* При получении данных от устройства (USB):
+  * Action: `kg.delletenebre.serialconnector.ACTION_DATA_RECEIVED`
+  * Extras:
+    * `connectionType`: `usb`
+    * `name`: название устройства, например `/dev/bus/usb/001/002`
+    * `data`: полученные данные
 
 
 ## Форматирование строк

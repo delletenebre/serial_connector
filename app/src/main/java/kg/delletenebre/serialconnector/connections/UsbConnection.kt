@@ -1,4 +1,4 @@
-package kg.delletenebre.serialconnector
+package kg.delletenebre.serialconnector.connections
 
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
@@ -9,6 +9,8 @@ import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbManager
 import android.util.Log
 import com.felhr.usbserial.UsbSerialDevice
+import kg.delletenebre.serialconnector.App
+import kg.delletenebre.serialconnector.BuildConfig
 
 
 interface UsbEvents {
@@ -17,7 +19,7 @@ interface UsbEvents {
     fun onData(serialDevice: UsbSerialDevice, data: String)
 }
 
-class UsbCommunication(private val context: Context, private val usbEvents: UsbEvents) {
+class UsbConnection(private val context: Context, private val usbEvents: UsbEvents) {
 
     var connections = mutableMapOf<String, UsbSerialDevice>()
 
@@ -103,13 +105,16 @@ class UsbCommunication(private val context: Context, private val usbEvents: UsbE
         context.unregisterReceiver(broadcastReceiver)
     }
 
-    private fun getIntegerPreference(key: String) = App.instance.getPreference(key).toInt()
+    fun connectTo(usbDevice: UsbDevice) {
+        val deviceName = usbDevice.deviceName
+        if (connections.containsKey(deviceName)) {
+            disconnect(deviceName)
+        }
 
-    private fun connectTo(usbDevice: UsbDevice) {
         try {
             val connection = usbManager.openDevice(usbDevice)
             val serialDevice: UsbSerialDevice
-            val deviceName = usbDevice.deviceName
+
 
             serialDevice = UsbSerialDevice.createUsbSerialDevice(usbDevice, connection)
             if (serialDevice.open()) {
@@ -131,10 +136,6 @@ class UsbCommunication(private val context: Context, private val usbEvents: UsbE
                 `DSR-DTR` - аппаратный протокол DSR/DTR.
                 `XON-XOFF` - программный протокол XOn/XOff.
                 */
-
-//                        if (connections.containsKey(deviceName)) {
-//                            return;
-//                        }
 
                 serialDevice.read { bytes ->
                     if (bytes.isNotEmpty()) {
@@ -169,6 +170,8 @@ class UsbCommunication(private val context: Context, private val usbEvents: UsbE
             Log.d("usb", "exception: ${e.localizedMessage}")
         }
     }
+
+    private fun getIntegerPreference(key: String) = App.instance.getPreference(key).toInt()
 
     companion object {
         private const val ACTION_USB_PERMISSION = "${BuildConfig.APPLICATION_ID}.USB_PERMISSION"

@@ -2,6 +2,8 @@ package kg.delletenebre.serialconnector
 
 import android.app.*
 import android.content.Intent
+import android.hardware.usb.UsbDevice
+import android.hardware.usb.UsbManager
 import android.os.Binder
 import android.os.Build
 import android.os.IBinder
@@ -10,6 +12,8 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.felhr.usbserial.UsbSerialDevice
+import kg.delletenebre.serialconnector.connections.UsbConnection
+import kg.delletenebre.serialconnector.connections.UsbEvents
 import kg.delletenebre.serialconnector.ui.SettingsActivity
 
 
@@ -47,13 +51,13 @@ class CommunicationService : Service() {
         }
     }
 
-    private val usbCommunication: UsbCommunication by lazy {
-        UsbCommunication(this, object : UsbEvents {
+    private val usbConnection: UsbConnection by lazy {
+        UsbConnection(this, object : UsbEvents {
             override fun onConnect(serialDevice: UsbSerialDevice) {
                 Intent().also { intent ->
                     intent.action = ACTION_CONNECTION_ESTABLISHED
                     intent.putExtra("connectionType", "usb")
-                    intent.putExtra("portName", serialDevice.portName)
+                    intent.putExtra("name", serialDevice.portName)
                     sendBroadcast(intent)
                 }
                 updateNotification()
@@ -63,7 +67,7 @@ class CommunicationService : Service() {
                 Intent().also { intent ->
                     intent.action = ACTION_CONNECTION_LOST
                     intent.putExtra("connectionType", "usb")
-                    intent.putExtra("portName", deviceName)
+                    intent.putExtra("name", deviceName)
                     sendBroadcast(intent)
                 }
                 updateNotification()
@@ -73,7 +77,7 @@ class CommunicationService : Service() {
                 Intent().also { intent ->
                     intent.action = ACTION_DATA_RECEIVED
                     intent.putExtra("connectionType", "usb")
-                    intent.putExtra("portName", serialDevice.portName)
+                    intent.putExtra("name", serialDevice.portName)
                     intent.putExtra("data", data)
                     sendBroadcast(intent)
                 }
@@ -88,18 +92,16 @@ class CommunicationService : Service() {
         return binder
     }
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        intent?.let {
-            if (it.getBooleanExtra(EXTRA_RESTART_SERVICE, false)) {
-                d("ok", "EXTRA_RESTART_SERVICE")
-            }
-
-            if (it.getBooleanExtra(EXTRA_UPDATE_USB_CONNECTION, false)) {
-                d("ok", "EXTRA_UPDATE_USB_CONNECTION")
-                usbCommunication.connect()
-                updateNotification()
-            }
+    override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
+        if (intent.getBooleanExtra(EXTRA_RESTART_SERVICE, false)) {
+            d("ok", "EXTRA_RESTART_SERVICE")
         }
+
+        val usbDevice: UsbDevice? = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE)
+        usbDevice?.let {
+            usbConnection.connectTo(it)
+        }
+
         d("ok", "started")
         return START_STICKY
     }
@@ -108,19 +110,19 @@ class CommunicationService : Service() {
         super.onCreate()
         d("ok", "onCreate")
 
-        usbCommunication.connect()
+        usbConnection.connect()
         updateNotification()
     }
 
     override fun onDestroy() {
         d("ok", "onDestroy")
-        usbCommunication.destroy()
+        usbConnection.destroy()
         super.onDestroy()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun getNotificationChannel(notificationManager: NotificationManager): String {
-        val channelId = "kg.delletenebre.serialconnector"
+        val channelId = APP_ID
         val channelName = resources.getString(R.string.app_name)
         val channel = NotificationChannel(
             channelId,
@@ -133,7 +135,7 @@ class CommunicationService : Service() {
     }
 
     private fun updateNotification() {
-        val usbConnections = usbCommunication.connections.count()
+        val usbConnections = usbConnection.connections.count()
         notificationBuilder.setContentTitle("USB: $usbConnections")// • BT: 0 • WS: 999")
 
         // startForeground(NOTIFICATION_ID, notificationBuilder.build())

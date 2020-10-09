@@ -14,7 +14,7 @@ class UsbDeviceAttachActivity : Activity() {
         val intent = Intent(applicationContext, CommunicationService::class.java)
         val usbDevice: UsbDevice? = getIntent().getParcelableExtra(UsbManager.EXTRA_DEVICE)
         usbDevice?.let {
-            intent.putExtra(CommunicationService.EXTRA_UPDATE_USB_CONNECTION, true)
+            intent.putExtra(UsbManager.EXTRA_DEVICE, it)
         }
         startService(intent)
         finish()
