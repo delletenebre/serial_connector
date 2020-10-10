@@ -48,6 +48,23 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory app:title="Сообщения" app:icon="@drawable/ic_messages">
+
+        <EditTextPreference
+            app:key="final_symbol"
+            app:title="Завершающий символ"
+            app:useSimpleSummaryProvider="true"
+            app:defaultValue="@string/pref_default_final_symbol" />
+
+        <EditTextPreference
+            app:key="max_message_length"
+            app:title="Максимальная длина сообщения"
+            app:useSimpleSummaryProvider="true"
+            app:defaultValue="@string/pref_default_max_message_length"
+            android:inputType="number" />
+
+    </PreferenceCategory>
+
     <PreferenceCategory app:title="USB соединение" app:icon="@drawable/ic_usb">
 
         <EditTextPreference
@@ -97,13 +114,6 @@
             app:title="Фильтр по названию"
             app:useSimpleSummaryProvider="true"
             app:defaultValue="@string/pref_default_usb_connection_filter" />
-
-        <EditTextPreference
-            app:key="usb_connection_max_message_length"
-            app:title="Максимальная длина сообщения"
-            app:useSimpleSummaryProvider="true"
-            app:defaultValue="@string/pref_default_usb_connection_max_message_length"
-            android:inputType="number" />
 
     </PreferenceCategory>
 

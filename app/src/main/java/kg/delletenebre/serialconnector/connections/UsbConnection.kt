@@ -70,7 +70,6 @@ class UsbConnection(private val context: Context, private val usbEvents: UsbEven
     private var stopBits = getIntegerPreference("usb_connection_stop_bits")
     private var flowControl = getIntegerPreference("usb_connection_flow_control")
     private var deviceNameFilter = App.instance.getPreference("usb_connection_filter").toRegex()
-    private var maxMessageLength = getIntegerPreference("max_message_length")
 
     init {
         IntentFilter().also { intentFilter ->
@@ -87,7 +86,6 @@ class UsbConnection(private val context: Context, private val usbEvents: UsbEven
         stopBits = getIntegerPreference("usb_connection_stop_bits")
         flowControl = getIntegerPreference("usb_connection_flow_control")
         deviceNameFilter = App.instance.getPreference("usb_connection_filter").toRegex()
-        maxMessageLength = getIntegerPreference("max_message_length")
 
         usbManager.deviceList.values.forEach { usbDevice ->
             usbManager.requestPermission(usbDevice, permissionIntent)
@@ -145,14 +143,9 @@ class UsbConnection(private val context: Context, private val usbEvents: UsbEven
                 buffers[deviceName] = ConnectionBuffer()
                 serialDevice.read { bytes ->
                     if (bytes.isNotEmpty()) {
-                        if (bytes.size > maxMessageLength) {
-                            disconnect(deviceName)
-                        } else {
-                            val message = bytes.toString(Charsets.UTF_8)
-                            buffers[deviceName]?.let {
-                                if (it.checkBuffer(message, "\n\r")) {
-                                    usbEvents.onMessageReceived(serialDevice, it.command)
-                                }
+                        buffers[deviceName]?.let {
+                            if (it.checkBytes(bytes, "\n")) {
+                                usbEvents.onMessageReceived(serialDevice, it.command)
                             }
                         }
                     }

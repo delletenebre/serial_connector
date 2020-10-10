@@ -7,6 +7,7 @@ import android.hardware.usb.UsbManager
 import android.os.Binder
 import android.os.Build
 import android.os.IBinder
+import android.util.Log
 import android.util.Log.d
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
@@ -147,9 +148,9 @@ class CommunicationService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        usbConnection.connect()
-        bluetoothConnection.connect()
         updateNotification()
+        usbConnection.connect()
+        //bluetoothConnection.connect()
     }
 
     override fun onDestroy() {
