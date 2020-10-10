@@ -123,6 +123,25 @@
             app:defaultValue=""
             app:useSimpleSummaryProvider="true"
             app:title="@string/pref_title_bluetooth_device" />
+
+        <SwitchPreferenceCompat
+            app:key="use_bluetooth_le"
+            app:title="Протокол Low Energy"
+            app:defaultValue="@bool/pref_default_use_bluetooth_le" />
+
+        <EditTextPreference
+            app:key="bluetooth_le_service_uuid"
+            app:dependency="use_bluetooth_le"
+            app:title="UUID сервиса"
+            app:useSimpleSummaryProvider="true"
+            app:defaultValue="@string/pref_default_bluetooth_le_service_uuid" />
+
+        <EditTextPreference
+            app:key="bluetooth_le_characteristic_uuid"
+            app:dependency="use_bluetooth_le"
+            app:title="UUID характеристики"
+            app:useSimpleSummaryProvider="true"
+            app:defaultValue="@string/pref_default_bluetooth_le_characteristic_uuid" />
     </PreferenceCategory>
 
 </PreferenceScreen>

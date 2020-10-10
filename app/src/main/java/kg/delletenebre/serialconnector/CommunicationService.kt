@@ -92,7 +92,7 @@ class CommunicationService : Service() {
     }
 
     private val bluetoothConnection: BluetoothConnection by lazy {
-        BluetoothConnection(object : BluetoothEvents {
+        BluetoothConnection(this, object : BluetoothEvents {
             override fun onConnect(mac: String) {
                 Intent().also { intent ->
                     intent.action = ACTION_CONNECTION_ESTABLISHED
@@ -150,7 +150,7 @@ class CommunicationService : Service() {
         super.onCreate()
         updateNotification()
         usbConnection.connect()
-        //bluetoothConnection.connect()
+        bluetoothConnection.connect()
     }
 
     override fun onDestroy() {
@@ -175,7 +175,8 @@ class CommunicationService : Service() {
 
     private fun updateNotification() {
         val usbConnections = usbConnection.connections.count()
-        notificationBuilder.setContentTitle("USB: $usbConnections")// • BT: 0 • WS: 999")
+        val bluetoothConnected = if (bluetoothConnection.connectedDeviceMac.isEmpty()) { "-" } else { "+" }
+        notificationBuilder.setContentTitle("USB: $usbConnections • BT: $bluetoothConnected")// • WS: 999")
 
         // startForeground(NOTIFICATION_ID, notificationBuilder.build())
 

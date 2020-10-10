@@ -7,7 +7,8 @@
     <string name="pref_default_usb_connection_stop_bits" translatable="false">1</string>
     <string name="pref_default_usb_connection_flow_control" translatable="false">0</string>
     <string name="pref_default_usb_connection_filter" translatable="false">^/dev/bus/usb/</string>
-
+    <string name="pref_default_bluetooth_le_service_uuid" translatable="false">0000ffe0-0000-1000-8000-00805f9b34fb</string>
+    <string name="pref_default_bluetooth_le_characteristic_uuid" translatable="false">0000ffe1-0000-1000-8000-00805f9b34fb</string>
 
 
     <string name="app_name" translatable="false">Serial Connector</string>

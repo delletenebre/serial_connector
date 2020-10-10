@@ -1,12 +1,19 @@
 package kg.delletenebre.serialconnector.connections
 
-import com.harrysoft.androidbluetoothserial.BluetoothManager
-import com.harrysoft.androidbluetoothserial.BluetoothSerialDevice
-import com.harrysoft.androidbluetoothserial.SimpleBluetoothDeviceInterface
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
+import android.bluetooth.BluetoothDevice
+import android.bluetooth.BluetoothManager
+import android.content.Context
+import android.util.Log
+import com.github.douglasjunior.bluetoothclassiclibrary.BluetoothClassicService
+import com.github.douglasjunior.bluetoothclassiclibrary.BluetoothConfiguration
+import com.github.douglasjunior.bluetoothclassiclibrary.BluetoothService
+import com.github.douglasjunior.bluetoothclassiclibrary.BluetoothService.OnBluetoothEventCallback
+import com.github.douglasjunior.bluetoothclassiclibrary.BluetoothStatus
+import com.github.douglasjunior.bluetoothlowenergylibrary.BluetoothLeService
 import kg.delletenebre.serialconnector.App
+import kg.delletenebre.serialconnector.R
+import java.util.*
+
 
 interface BluetoothEvents {
     fun onConnect(mac: String)
@@ -14,13 +21,12 @@ interface BluetoothEvents {
     fun onMessageReceived(mac: String, data: String)
 }
 
-class BluetoothConnection(private val bluetoothEvents: BluetoothEvents) {
-    private val bluetoothManager: BluetoothManager? = BluetoothManager.getInstance()
-    private lateinit var deviceInterface: SimpleBluetoothDeviceInterface
-
-    init {
-
+class BluetoothConnection(private val context: Context, private val events: BluetoothEvents) {
+    private val bluetoothManager: BluetoothManager by lazy {
+        context.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
     }
+    var connectedDeviceMac = ""
+    val buffer = ConnectionBuffer()
 
     fun connect() {
         val selectedMac = App.instance.getPreference("bluetooth_device", "")
@@ -30,33 +36,86 @@ class BluetoothConnection(private val bluetoothEvents: BluetoothEvents) {
     }
 
     fun destroy() {
-        bluetoothManager?.close()
+        buffer.clear()
     }
 
     private fun connectTo(mac: String) {
-        bluetoothManager?.let {
-            it.openSerialDevice(mac)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::onConnected, this::onError)
+        val bluetoothAdapter = bluetoothManager.adapter
+        val device: BluetoothDevice = bluetoothAdapter.getRemoteDevice(mac)
+        val useLowEnergyProtocol = App.instance.getBooleanPreference("use_bluetooth_le")
+        val serviceUuid = App.instance.getPreference("bluetooth_le_service_uuid")
+        val characteristicUuid = App.instance.getPreference("bluetooth_le_characteristic_uuid")
+        val appName = context.resources.getString(R.string.app_name)
+        val serialUuid = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb")
+
+        val config = BluetoothConfiguration().apply {
+            context = App.instance
+            bufferSize = 1024
+            characterDelimiter = '\n'
+            deviceName = appName
+            callListenersInMainThread = false
+            uuid = serialUuid // Used to filter found devices. Set null to find all devices.
+            if (useLowEnergyProtocol) {
+                bluetoothServiceClass = BluetoothLeService::class.java
+                uuidService = UUID.fromString(serviceUuid) // Required
+                uuidCharacteristic = UUID.fromString(characteristicUuid) // Required
+                // transport = BluetoothDevice.TRANSPORT_LE // Required for dual-mode devices
+            } else {
+                bluetoothServiceClass = BluetoothClassicService::class.java
+            }
+        }
+
+        BluetoothService.init(config)
+        BluetoothService.getDefaultInstance()?.apply {
+            disconnect()
+            setOnEventCallback(object : OnBluetoothEventCallback {
+                override fun onDataRead(bytes: ByteArray, length: Int) {
+                    if (bytes.isNotEmpty()) {
+                        if (buffer.checkBytes(bytes)) {
+                            events.onMessageReceived(connectedDeviceMac, buffer.command)
+                        }
+                    }
+                }
+
+                override fun onStatusChange(status: BluetoothStatus) {
+                    when (status) {
+                        BluetoothStatus.NONE -> {
+                            val disconnectedDeviceMac = connectedDeviceMac
+                            connectedDeviceMac = ""
+                            events.onDisconnect(disconnectedDeviceMac)
+                        }
+
+                        BluetoothStatus.CONNECTED -> {
+                            connectedDeviceMac = device.address
+                            events.onConnect(connectedDeviceMac)
+                        }
+
+                        else -> {
+                            buffer.clear()
+                        }
+                    }
+                }
+
+                override fun onDeviceName(deviceName: String) {}
+
+                override fun onToast(message: String) {
+                    Log.d("ahoha", "onToast: $message")
+                }
+
+                override fun onDataWrite(buffer: ByteArray) {
+                    Log.d("ahoha", "onDataWrite: $buffer")
+                }
+            })
+            connect(device)
         }
     }
-
-    private fun onConnected(connectedDevice: BluetoothSerialDevice) {
-        val mac = connectedDevice.mac
-        deviceInterface = connectedDevice.toSimpleDeviceInterface()
-        deviceInterface.setListeners(
-            { message: String -> bluetoothEvents.onMessageReceived(mac, message) },
-            { message: String -> onMessageSent(message) }
-        ) { error: Throwable -> onError(error) }
-        bluetoothEvents.onConnect(mac)
-    }
-
-    private fun onMessageSent(message: String) {
-
-    }
-
-    private fun onError(error: Throwable) {
-        // Handle the error
-    }
+//
+//    private fun onError(error: Throwable) {
+//        Log.e("ahoha", "error: " + error.localizedMessage)
+//        val disconnectedDeviceMac = connectedDeviceMac
+//        connectedDeviceMac = ""
+//        events.onDisconnect(disconnectedDeviceMac)
+//
+//        //connect()
+//    }
 }
