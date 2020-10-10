@@ -100,7 +100,7 @@
 
         <EditTextPreference
             app:key="usb_connection_max_message_length"
-            app:title="Максимальная длина сообщенния"
+            app:title="Максимальная длина сообщения"
             app:useSimpleSummaryProvider="true"
             app:defaultValue="@string/pref_default_usb_connection_max_message_length"
             android:inputType="number" />
