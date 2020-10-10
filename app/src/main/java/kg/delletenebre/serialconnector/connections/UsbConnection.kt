@@ -144,7 +144,7 @@ class UsbConnection(private val context: Context, private val usbEvents: UsbEven
                 serialDevice.read { bytes ->
                     if (bytes.isNotEmpty()) {
                         buffers[deviceName]?.let {
-                            if (it.checkBytes(bytes, "\n")) {
+                            if (it.checkBytes(bytes)) {
                                 usbEvents.onMessageReceived(serialDevice, it.command)
                             }
                         }
