@@ -8,7 +8,7 @@
 
     <Preference
         app:key="logs"
-        app:icon="@drawable/ic_messages"
+        app:icon="@drawable/ic_message"
         app:title="Просмотр логов" />
 
     <PreferenceCategory app:title="Основные" app:icon="@drawable/ic_settings">
@@ -48,7 +48,7 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory app:title="Сообщения" app:icon="@drawable/ic_messages">
+    <PreferenceCategory app:title="Сообщения" app:icon="@drawable/ic_binary_message">
 
         <EditTextPreference
             app:key="final_symbol"
