@@ -86,7 +86,7 @@ USB-устройства (Arduino) иногда приходят *мусорны
 * **`UUID сервиса`** и **`UUID характеристики`** - узнать данные UUID можно с помощью, например,
 [Bluetooth LE Scanner](https://play.google.com/store/apps/details?id=uk.co.alt236.btlescan). У разных
 производителей скорее всего разные UUID. Обязательно проверьте данные uuid.  
-<img src="https://raw.githubusercontent.com/delletenebre/serial_connector/images/bluetooth_le_uuids.png" width="240">
+<img src="https://github.com/delletenebre/serial_connector/raw/master/images/bluetooth_le_uuids.png" width="240">
 
 ## Arduino → Serial Connector
 Формат отправляемой команды: `<key:value>`
