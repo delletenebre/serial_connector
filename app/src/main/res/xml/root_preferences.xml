@@ -98,6 +98,13 @@
             app:useSimpleSummaryProvider="true"
             app:defaultValue="@string/pref_default_usb_connection_filter" />
 
+        <EditTextPreference
+            app:key="usb_connection_max_message_length"
+            app:title="Максимальная длина сообщенния"
+            app:useSimpleSummaryProvider="true"
+            app:defaultValue="@string/pref_default_usb_connection_max_message_length"
+            android:inputType="number" />
+
     </PreferenceCategory>
 
     <PreferenceCategory app:title="Bluetooth соединение" app:icon="@drawable/ic_bluetooth">
