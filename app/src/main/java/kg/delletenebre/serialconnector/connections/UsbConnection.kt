@@ -21,7 +21,8 @@ interface UsbEvents {
 
 class UsbConnection(private val context: Context, private val usbEvents: UsbEvents) {
 
-    var connections = mutableMapOf<String, UsbSerialDevice>()
+    val connections = mutableMapOf<String, UsbSerialDevice>()
+    private val buffers = mutableMapOf<String, ConnectionBuffer>()
 
     private val usbManager: UsbManager by lazy {
         context.getSystemService(Context.USB_SERVICE) as UsbManager
@@ -94,6 +95,7 @@ class UsbConnection(private val context: Context, private val usbEvents: UsbEven
         if (connections.containsKey(portName)) {
             connections[portName]?.close()
             connections.remove(portName)
+            buffers.remove(portName)
             usbEvents.onDisconnect(portName)
         }
     }
@@ -136,39 +138,30 @@ class UsbConnection(private val context: Context, private val usbEvents: UsbEven
                 `DSR-DTR` - аппаратный протокол DSR/DTR.
                 `XON-XOFF` - программный протокол XOn/XOff.
                 */
-
+                connections[deviceName] = serialDevice
+                buffers[deviceName] = ConnectionBuffer()
                 serialDevice.read { bytes ->
                     if (bytes.isNotEmpty()) {
                         if (bytes.size > 1024) {
                             disconnect(deviceName)
                         } else {
-                            usbEvents.onMessageReceived(serialDevice, bytes.toString(Charsets.UTF_8))
+                            val message = bytes.toString(Charsets.UTF_8)
+                            buffers[deviceName]?.let {
+                                if (it.checkBuffer(message, "\n\r")) {
+                                    usbEvents.onMessageReceived(serialDevice, it.command)
+                                }
+                            }
                         }
-
-//                                if (buffer != null) {
-//                                    buffer.write(bytes)
-//                                    if (buffer.toByteArray().contains(0x0A)) {
-//                                        val data = buffer.toString(Charsets.UTF_8.name())
-//                                        val dataParts = data.split("\n".toRegex(), 2)
-//                                        val command = dataParts[0].replace("\r", "")
-//                                        // TODO send broadcast data received
-//                                        buffer.reset()
-//                                        buffer.write(dataParts[1].toByteArray(Charsets.UTF_8))
-//                                    }
-//                                }
                     }
                 }
 
                 // Some Arduinos would need some sleep because firmware wait some time to
                 // know whether a new sketch is going to be uploaded or not
                 Thread.sleep(1000)
-                Log.d("USB Connection", "Connected to USB-device: $deviceName")
                 // TODO send broadcast device connected
 //                        if (App.getInstance().getBooleanPreference("send_connection_state")) {
 //                            serialDevice.write((App.ACTION_CONNECTION_ESTABLISHED + "\n").toByteArray())
 //                        }
-
-                connections[serialDevice.portName] = serialDevice
                 usbEvents.onConnect(serialDevice)
             }
         } catch (e: Exception) {

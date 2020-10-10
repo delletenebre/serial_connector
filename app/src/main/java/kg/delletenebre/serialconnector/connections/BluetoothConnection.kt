@@ -15,7 +15,7 @@ interface BluetoothEvents {
 }
 
 class BluetoothConnection(private val bluetoothEvents: BluetoothEvents) {
-    private val bluetoothManager: BluetoothManager = BluetoothManager.getInstance()
+    private val bluetoothManager: BluetoothManager? = BluetoothManager.getInstance()
     private lateinit var deviceInterface: SimpleBluetoothDeviceInterface
 
     init {
@@ -30,14 +30,16 @@ class BluetoothConnection(private val bluetoothEvents: BluetoothEvents) {
     }
 
     fun destroy() {
-        bluetoothManager.close()
+        bluetoothManager?.close()
     }
 
-    private fun connectTo(mac: String): Disposable {
-        return bluetoothManager.openSerialDevice(mac)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(this::onConnected, this::onError)
+    private fun connectTo(mac: String) {
+        bluetoothManager?.let {
+            it.openSerialDevice(mac)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::onConnected, this::onError)
+        }
     }
 
     private fun onConnected(connectedDevice: BluetoothSerialDevice) {
