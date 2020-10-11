@@ -116,25 +116,58 @@ void loop() {
 ```
 
 
+## Android → Serial Connector
+
+Вы можете управлять сервисом создавая следующие Broadcast Intent'ы:
+* Запустить сервис:
+  * Action: `kg.delletenebre.serialconnector.ACTION_START_SERVICE`
+* Остановить сервис:
+  * Action: `kg.delletenebre.serialconnector.ACTION_STOP_SERVICE`
+* Перезапустить сервис:
+  * Action: `kg.delletenebre.serialconnector.ACTION_RESTART_SERVICE`
+
+
 ## Serial Connector → Android
-Broadcast Intent'ы:
-* При открытии соединения (USB):
+
+Ваши скрипты/приложения могут подписаться на следующие Broadcast Intent'ы создаваемые
+Serial Connector. Сервис будет создавать их при следующих событиях:
+
+* При успешном открытии соединения с USB-устройством:
   * Action: `kg.delletenebre.serialconnector.ACTION_CONNECTION_ESTABLISHED`
   * Extras:
     * `connectionType`: `usb`
     * `name`: название устройства, например `/dev/bus/usb/001/002`
-    
-* При потере соединения (USB):
+
+* При потере соединения с USB-устройством:
   * Action: `kg.delletenebre.serialconnector.ACTION_CONNECTION_LOST`
   * Extras:
     * `connectionType`: `usb`
     * `name`: название устройства, например `/dev/bus/usb/001/002`
-    
-* При получении данных от устройства (USB):
+
+* При получении данных от USB-устройства:
   * Action: `kg.delletenebre.serialconnector.ACTION_DATA_RECEIVED`
   * Extras:
     * `connectionType`: `usb`
     * `name`: название устройства, например `/dev/bus/usb/001/002`
+    * `data`: полученные данные
+
+* При успешном соединении с Bluetooth-устройством:
+  * Action: `kg.delletenebre.serialconnector.ACTION_CONNECTION_ESTABLISHED`
+  * Extras:
+    * `connectionType`: `bluetooth`
+    * `name`: MAC-адрес устройства `01:23:45:67:89:AB`
+
+* При потере соединения с Bluetooth-устройством:
+  * Action: `kg.delletenebre.serialconnector.ACTION_CONNECTION_LOST`
+  * Extras:
+    * `connectionType`: `bluetooth`
+    * `name`: MAC-адрес устройства `01:23:45:67:89:AB`
+
+* При получении данных от Bluetooth-устройства:
+  * Action: `kg.delletenebre.serialconnector.ACTION_DATA_RECEIVED`
+  * Extras:
+    * `connectionType`: `bluetooth`
+    * `name`: MAC-адрес устройства `01:23:45:67:89:AB`
     * `data`: полученные данные
 
 

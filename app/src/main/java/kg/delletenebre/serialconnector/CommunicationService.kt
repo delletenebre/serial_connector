@@ -7,8 +7,6 @@ import android.hardware.usb.UsbManager
 import android.os.Binder
 import android.os.Build
 import android.os.IBinder
-import android.util.Log
-import android.util.Log.d
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -179,9 +177,10 @@ class CommunicationService : Service() {
         const val ACTION_CONNECTION_ESTABLISHED = "$APP_ID.ACTION_CONNECTION_ESTABLISHED"
         const val ACTION_CONNECTION_LOST = "$APP_ID.ACTION_CONNECTION_LOST"
         const val ACTION_DATA_RECEIVED = "$APP_ID.ACTION_DATA_RECEIVED"
-        const val ACTION_RESTART_SERVICE = "$APP_ID.ACTION_RESTART_SERVICE"
+
         const val ACTION_START_SERVICE = "$APP_ID.ACTION_START_SERVICE"
         const val ACTION_STOP_SERVICE = "$APP_ID.ACTION_STOP_SERVICE"
+        const val ACTION_RESTART_SERVICE = "$APP_ID.ACTION_RESTART_SERVICE"
 
         const val EXTRA_UPDATE_USB_CONNECTION = "update_usb_connection"
 
