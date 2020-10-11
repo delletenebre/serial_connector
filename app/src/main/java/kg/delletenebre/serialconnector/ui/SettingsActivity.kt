@@ -1,19 +1,14 @@
 package kg.delletenebre.serialconnector.ui
 
-import android.content.BroadcastReceiver
-import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
-import android.hardware.usb.UsbDevice
-import android.hardware.usb.UsbManager
+import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
-import com.google.android.material.snackbar.Snackbar
 import kg.delletenebre.serialconnector.CommunicationService
 import kg.delletenebre.serialconnector.R
-import kg.delletenebre.serialconnector.connections.UsbConnection
 
 
 class SettingsActivity : AppCompatActivity() {
@@ -31,18 +26,25 @@ class SettingsActivity : AppCompatActivity() {
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey)
 
-            val restartServiceButton = findPreference<Preference>("restart_service")
-            restartServiceButton?.setOnPreferenceClickListener {
+            findPreference<Preference>("restart_service")?.setOnPreferenceClickListener {
                 context?.stopService(Intent(context, CommunicationService::class.java))
                 context?.startService(Intent(context, CommunicationService::class.java))
                 true
             }
 
-            val logsButton = findPreference<Preference>("logs")
-            logsButton?.setOnPreferenceClickListener {
+            findPreference<Preference>("logs")?.setOnPreferenceClickListener {
                 context?.startActivity(Intent(context, LogsActivity::class.java))
                 true
             }
+
+            findPreference<Preference>("help")?.setOnPreferenceClickListener {
+                val url = "https://github.com/delletenebre/serial_connector#настройки"
+                val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                startActivity(browserIntent)
+                true
+            }
+
+
         }
     }
 }

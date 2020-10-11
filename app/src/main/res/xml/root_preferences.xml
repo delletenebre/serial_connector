@@ -11,6 +11,11 @@
         app:icon="@drawable/ic_message"
         app:title="Просмотр логов" />
 
+    <Preference
+        app:key="help"
+        app:icon="@drawable/ic_help"
+        app:title="Справка и документация" />
+
     <PreferenceCategory app:title="Основные" app:icon="@drawable/ic_settings">
 
         <SwitchPreferenceCompat
