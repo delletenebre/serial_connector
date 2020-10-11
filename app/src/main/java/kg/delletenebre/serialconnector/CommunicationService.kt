@@ -84,9 +84,6 @@ class CommunicationService : Service() {
                     intent.putExtra("data", data)
                     sendBroadcast(intent)
                 }
-                d(">>>", "connectionType: usb")
-                d(">>>", "portName: ${serialDevice.portName}")
-                d(">>>", "data: $data")
             }
         })
     }
@@ -121,9 +118,6 @@ class CommunicationService : Service() {
                     intent.putExtra("data", data)
                     sendBroadcast(intent)
                 }
-                d(">>>", "connectionType: bluetooth")
-                d(">>>", "mac: $mac")
-                d(">>>", "data: $data")
             }
         })
     }
@@ -133,32 +127,25 @@ class CommunicationService : Service() {
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        if (intent.getBooleanExtra(EXTRA_RESTART_SERVICE, false)) {
-            d("ok", "EXTRA_RESTART_SERVICE")
-        }
-
         val usbDevice: UsbDevice? = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE)
         usbDevice?.let {
             usbConnection.connectTo(it)
         }
 
-        d("ok", "started")
         return START_STICKY
     }
 
     override fun onCreate() {
         super.onCreate()
-        d("ok", "onCreate")
+        startForeground(NOTIFICATION_ID, notificationBuilder.build())
         updateNotification()
         usbConnection.connect()
         bluetoothConnection.connect()
-        d("ok", "onCreate end")
     }
 
     override fun onDestroy() {
         usbConnection.destroy()
         bluetoothConnection.destroy()
-        d("ok", "onDestroy")
         super.onDestroy()
     }
 
@@ -178,15 +165,13 @@ class CommunicationService : Service() {
 
     private fun updateNotification() {
         val usbConnections = usbConnection.connections.count()
-        val bluetoothConnected = if (bluetoothConnection.connectedDeviceMac.isEmpty()) { "-" } else { "+" }
-        notificationBuilder.setContentTitle("USB: $usbConnections • BT: $bluetoothConnected")// • WS: 999")
-
-        // startForeground(NOTIFICATION_ID, notificationBuilder.build())
+        val bluetoothConnected = bluetoothConnection.connectedDeviceMac.isNotEmpty()
+        val bluetoothState = if (bluetoothConnected) { "+" } else { "-" }
+        notificationBuilder.setContentTitle("USB: $usbConnections • BT: $bluetoothState")// • WS: 999")
 
         with(NotificationManagerCompat.from(this)) {
             notify(NOTIFICATION_ID, notificationBuilder.build())
         }
-        //notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build())
     }
 
     companion object {
@@ -194,10 +179,12 @@ class CommunicationService : Service() {
         const val ACTION_CONNECTION_ESTABLISHED = "$APP_ID.ACTION_CONNECTION_ESTABLISHED"
         const val ACTION_CONNECTION_LOST = "$APP_ID.ACTION_CONNECTION_LOST"
         const val ACTION_DATA_RECEIVED = "$APP_ID.ACTION_DATA_RECEIVED"
+        const val ACTION_RESTART_SERVICE = "$APP_ID.ACTION_RESTART_SERVICE"
+        const val ACTION_START_SERVICE = "$APP_ID.ACTION_START_SERVICE"
+        const val ACTION_STOP_SERVICE = "$APP_ID.ACTION_STOP_SERVICE"
 
-
-        const val EXTRA_RESTART_SERVICE = "restart_service"
         const val EXTRA_UPDATE_USB_CONNECTION = "update_usb_connection"
+
 
         private const val NOTIFICATION_ID = 255
     }

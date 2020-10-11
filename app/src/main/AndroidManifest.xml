@@ -28,6 +28,9 @@
             android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="kg.delletenebre.serialconnector.ACTION_RESTART_SERVICE" />
+                <action android:name="kg.delletenebre.serialconnector.ACTION_START_SERVICE" />
+                <action android:name="kg.delletenebre.serialconnector.ACTION_STOP_SERVICE" />
             </intent-filter>
         </receiver>
 

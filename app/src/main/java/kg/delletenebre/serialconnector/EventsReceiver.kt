@@ -36,6 +36,18 @@ class EventsReceiver : BroadcastReceiver() {
                     }, delay.toLong(), TimeUnit.SECONDS)
                 }
             }
+
+            CommunicationService.ACTION_RESTART_SERVICE -> {
+                Utils.restartService(context, serviceIntent)
+            }
+
+            CommunicationService.ACTION_START_SERVICE -> {
+                Utils.startService(context, serviceIntent)
+            }
+
+            CommunicationService.ACTION_STOP_SERVICE -> {
+                Utils.stopService(context, serviceIntent)
+            }
         }
     }
 }
