@@ -19,7 +19,7 @@ interface UsbEvents {
     fun onMessageReceived(serialDevice: UsbSerialDevice, data: String)
 }
 
-class UsbConnection(private val context: Context, private val usbEvents: UsbEvents) {
+class UsbConnection(private val context: Context, private val events: UsbEvents) {
 
     val connections = mutableMapOf<String, UsbSerialDevice>()
     private val buffers = mutableMapOf<String, ConnectionBuffer>()
@@ -97,7 +97,7 @@ class UsbConnection(private val context: Context, private val usbEvents: UsbEven
             connections[portName]?.close()
             connections.remove(portName)
             buffers.remove(portName)
-            usbEvents.onDisconnect(portName)
+            events.onDisconnect(portName)
         }
     }
 
@@ -145,7 +145,10 @@ class UsbConnection(private val context: Context, private val usbEvents: UsbEven
                     if (bytes.isNotEmpty()) {
                         buffers[deviceName]?.let {
                             if (it.checkBytes(bytes)) {
-                                usbEvents.onMessageReceived(serialDevice, it.command)
+                                it.commands.forEach { message ->
+                                    events.onMessageReceived(serialDevice, message)
+                                }
+                                it.commands.clear()
                             }
                         }
                     }
@@ -158,7 +161,7 @@ class UsbConnection(private val context: Context, private val usbEvents: UsbEven
 //                        if (App.getInstance().getBooleanPreference("send_connection_state")) {
 //                            serialDevice.write((App.ACTION_CONNECTION_ESTABLISHED + "\n").toByteArray())
 //                        }
-                usbEvents.onConnect(serialDevice)
+                events.onConnect(serialDevice)
             }
         } catch (e: Exception) {
             Log.d("usb", "exception: ${e.localizedMessage}")

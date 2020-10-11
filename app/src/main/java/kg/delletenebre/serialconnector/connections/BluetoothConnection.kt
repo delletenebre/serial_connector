@@ -72,7 +72,10 @@ class BluetoothConnection(private val context: Context, private val events: Blue
                 override fun onDataRead(bytes: ByteArray, length: Int) {
                     if (bytes.isNotEmpty()) {
                         if (buffer.checkBytes(bytes)) {
-                            events.onMessageReceived(connectedDeviceMac, buffer.command)
+                            buffer.commands.forEach {
+                                events.onMessageReceived(connectedDeviceMac, it)
+                            }
+                            buffer.commands.clear()
                         }
                     }
                 }

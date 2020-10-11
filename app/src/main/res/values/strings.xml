@@ -1,5 +1,5 @@
 <resources>
-    <string name="pref_default_final_symbol" translatable="false">\n</string>
+    <string name="pref_default_final_symbol" translatable="false"></string>
     <string name="pref_default_max_message_length" translatable="false">512</string>
     <string name="pref_default_usb_connection_baud_rate" translatable="false">115200</string>
     <string name="pref_default_usb_connection_data_bits" translatable="false">8</string>

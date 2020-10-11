@@ -1,12 +1,11 @@
 package kg.delletenebre.serialconnector.connections
 
-import android.util.Log
 import kg.delletenebre.serialconnector.App
 
 
 class ConnectionBuffer {
     private var buffer = ""
-    var command = ""
+    var commands = mutableListOf<String>()
 
     fun checkBytes(bytes: ByteArray): Boolean {
         val maxMessageLength = App.instance.getPreference("max_message_length").toInt()
@@ -19,23 +18,23 @@ class ConnectionBuffer {
 
     fun clear() {
         buffer = ""
+        commands.clear()
     }
 
     private fun checkMessage(message: String): Boolean {
         val finalSymbol = App.instance.getPreference("final_symbol")
-        val finalRegex = finalSymbol.toRegex()
+        val finalRegex = App.instance.getPreference("final_symbol").toRegex()
         buffer = buffer.plus(message)
         if (finalSymbol.isEmpty()) {
-            command = buffer
+            commands.add(buffer)
             clear()
-            return command.isNotEmpty()
         } else if (buffer.contains(finalRegex)) {
             val dataParts = buffer.split(finalRegex).toMutableList()
-            command = dataParts.removeFirst()
-            buffer = dataParts.joinToString(finalSymbol)
-            return command.isNotEmpty()
+            buffer = dataParts.removeLast()
+            commands = dataParts
         }
-        return false
+        commands = commands.filter { it.isNotEmpty() }.toMutableList()
+        return commands.isNotEmpty()
     }
 
 }
