@@ -148,14 +148,17 @@ class CommunicationService : Service() {
 
     override fun onCreate() {
         super.onCreate()
+        d("ok", "onCreate")
         updateNotification()
         usbConnection.connect()
         bluetoothConnection.connect()
+        d("ok", "onCreate end")
     }
 
     override fun onDestroy() {
         usbConnection.destroy()
         bluetoothConnection.destroy()
+        d("ok", "onDestroy")
         super.onDestroy()
     }
 

@@ -9,11 +9,13 @@ import java.util.concurrent.TimeUnit
 class EventsReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
+        val serviceIntent = Intent(context, CommunicationService::class.java)
+
         when (intent.action) {
 
             Intent.ACTION_SCREEN_OFF -> {
                 if (App.instance.getBooleanPreference("stop_when_screen_off")) {
-                    context.stopService(Intent(context, CommunicationService::class.java))
+                    Utils.stopService(context, serviceIntent)
                 }
             }
 
@@ -21,8 +23,7 @@ class EventsReceiver : BroadcastReceiver() {
                 if (App.instance.getBooleanPreference("restart_when_screen_on")) {
                     val delay = App.instance.getIntPreference("restart_when_screen_on_delay")
                     Executors.newSingleThreadScheduledExecutor().schedule({
-                        context.stopService(Intent(context, CommunicationService::class.java))
-                        context.startService(Intent(context, CommunicationService::class.java))
+                        Utils.restartService(context, serviceIntent)
                     }, delay.toLong(), TimeUnit.SECONDS)
                 }
             }
@@ -31,7 +32,7 @@ class EventsReceiver : BroadcastReceiver() {
                 if (App.instance.getBooleanPreference("start_on_boot_completed")) {
                     val delay = App.instance.getIntPreference("start_on_boot_completed_delay")
                     Executors.newSingleThreadScheduledExecutor().schedule({
-                        context.startService(Intent(context, CommunicationService::class.java))
+                        Utils.startService(context, serviceIntent)
                     }, delay.toLong(), TimeUnit.SECONDS)
                 }
             }

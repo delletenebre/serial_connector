@@ -5,8 +5,8 @@ import android.content.Intent
 import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbManager
 import android.os.Bundle
-import android.util.Log
 import kg.delletenebre.serialconnector.CommunicationService
+import kg.delletenebre.serialconnector.Utils
 
 class UsbDeviceAttachActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -16,7 +16,7 @@ class UsbDeviceAttachActivity : Activity() {
         usbDevice?.let {
             intent.putExtra(UsbManager.EXTRA_DEVICE, it)
         }
-        startService(intent)
+        Utils.startService(this, intent)
         finish()
     }
 }

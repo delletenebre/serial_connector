@@ -3,12 +3,12 @@ package kg.delletenebre.serialconnector.ui
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import kg.delletenebre.serialconnector.CommunicationService
 import kg.delletenebre.serialconnector.R
+import kg.delletenebre.serialconnector.Utils
 
 
 class SettingsActivity : AppCompatActivity() {
@@ -27,8 +27,9 @@ class SettingsActivity : AppCompatActivity() {
             setPreferencesFromResource(R.xml.root_preferences, rootKey)
 
             findPreference<Preference>("restart_service")?.setOnPreferenceClickListener {
-                context?.stopService(Intent(context, CommunicationService::class.java))
-                context?.startService(Intent(context, CommunicationService::class.java))
+                context?.let {
+                    Utils.restartService(it, Intent(context, CommunicationService::class.java))
+                }
                 true
             }
 

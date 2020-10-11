@@ -9,7 +9,7 @@ import androidx.preference.PreferenceManager
 
 class App : Application() {
 
-    val prefs: SharedPreferences by lazy {
+    private val prefs: SharedPreferences by lazy {
         PreferenceManager.getDefaultSharedPreferences(this)
     }
 

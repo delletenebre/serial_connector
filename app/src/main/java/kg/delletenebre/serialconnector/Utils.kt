@@ -1,6 +1,8 @@
 package kg.delletenebre.serialconnector
 
 import android.content.Context
+import android.content.Intent
+import android.os.Build
 
 object Utils {
     fun getResourceId(context: Context, name: String, type: String): Int {
@@ -21,5 +23,22 @@ object Utils {
 
     fun getIdIdentifier(context: Context, name: String): Int {
         return context.resources.getIdentifier(name, "id", context.packageName)
+    }
+
+    fun startService(context: Context, intent: Intent) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            context.startForegroundService(intent)
+        } else {
+            context.startService(intent)
+        }
+    }
+
+    fun stopService(context: Context, intent: Intent) {
+        context.stopService(intent)
+    }
+
+    fun restartService(context: Context, intent: Intent) {
+        stopService(context, intent)
+        startService(context, intent)
     }
 }
