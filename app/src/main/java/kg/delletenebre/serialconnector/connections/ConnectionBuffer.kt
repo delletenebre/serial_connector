@@ -18,7 +18,6 @@ class ConnectionBuffer {
 
     fun clear() {
         buffer = ""
-        commands.clear()
     }
 
     private fun checkMessage(message: String): Boolean {
@@ -26,11 +25,13 @@ class ConnectionBuffer {
         val finalRegex = App.instance.getPreference("final_symbol").toRegex()
         buffer = buffer.plus(message)
         if (finalSymbol.isEmpty()) {
+            commands.clear()
             commands.add(buffer)
             clear()
         } else if (buffer.contains(finalRegex)) {
             val dataParts = buffer.split(finalRegex).toMutableList()
             buffer = dataParts.removeLast()
+            commands.clear()
             commands = dataParts
         }
         commands = commands.filter { it.isNotEmpty() }.toMutableList()

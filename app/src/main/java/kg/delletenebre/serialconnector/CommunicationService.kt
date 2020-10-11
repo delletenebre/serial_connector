@@ -7,6 +7,7 @@ import android.hardware.usb.UsbManager
 import android.os.Binder
 import android.os.Build
 import android.os.IBinder
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -75,6 +76,7 @@ class CommunicationService : Service() {
             }
 
             override fun onMessageReceived(serialDevice: UsbSerialDevice, data: String) {
+                Log.d("ahoha", "action: $ACTION_DATA_RECEIVED")
                 Intent().also { intent ->
                     intent.action = ACTION_DATA_RECEIVED
                     intent.putExtra("connectionType", "usb")

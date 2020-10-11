@@ -145,6 +145,7 @@ class UsbConnection(private val context: Context, private val events: UsbEvents)
                     if (bytes.isNotEmpty()) {
                         buffers[deviceName]?.let {
                             if (it.checkBytes(bytes)) {
+                                Log.d("ahoha", "here")
                                 it.commands.forEach { message ->
                                     events.onMessageReceived(serialDevice, message)
                                 }
