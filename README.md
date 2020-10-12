@@ -18,11 +18,13 @@
 * Благодарю всех за поддержку которую вы мне оказываете, несмотря на то, что некоторые проблемы
 решаются долгое время.
 
+## Поддержка проекта
+
+:coffee: [Угостить кофе](https://money.yandex.ru/to/410015829927510)
 
 ## Библиотеки
 * [felHR85/UsbSerial](https://github.com/felHR85/UsbSerial)
 * [douglasjunior/AndroidBluetoothLibrary](https://github.com/douglasjunior/AndroidBluetoothLibrary)
-
 
 ## Альтернативы
 * [Serial Manager](https://github.com/delletenebre/SerialManager)
