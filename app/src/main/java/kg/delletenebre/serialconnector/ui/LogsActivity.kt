@@ -4,13 +4,13 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Selection
 import android.text.method.ScrollingMovementMethod
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import kg.delletenebre.serialconnector.CommunicationService
 import kg.delletenebre.serialconnector.R
 import java.text.SimpleDateFormat
@@ -35,7 +35,7 @@ class LogsActivity : AppCompatActivity() {
                         val connectionType = intent.getStringExtra("connectionType").toString()
                         val name = intent.getStringExtra("name").toString()
                         val data = intent.getStringExtra("data").toString()
-                        addMessage("$connectionType\t\tполучены данные от $name\n\t\t\t\t\t\t\t$data")
+                        addMessage("$connectionType\t\tполучены данные от $name\n\t\t\t\t\t\t$data")
                     }
                 }
             }
