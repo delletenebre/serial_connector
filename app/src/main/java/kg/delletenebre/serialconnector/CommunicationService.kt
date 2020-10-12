@@ -10,11 +10,8 @@ import android.os.IBinder
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import com.felhr.usbserial.UsbSerialDevice
 import kg.delletenebre.serialconnector.connections.BluetoothConnection
-import kg.delletenebre.serialconnector.connections.BluetoothEvents
 import kg.delletenebre.serialconnector.connections.UsbConnection
-import kg.delletenebre.serialconnector.connections.UsbEvents
 import kg.delletenebre.serialconnector.ui.SettingsActivity
 
 
@@ -52,72 +49,44 @@ class CommunicationService : Service() {
         }
     }
 
-    private val usbConnection: UsbConnection by lazy {
-        UsbConnection(this, object : UsbEvents {
-            override fun onConnect(serialDevice: UsbSerialDevice) {
-                Intent().also { intent ->
-                    intent.action = ACTION_CONNECTION_ESTABLISHED
-                    intent.putExtra("connectionType", "usb")
-                    intent.putExtra("name", serialDevice.portName)
-                    sendBroadcast(intent)
-                }
-                updateNotification()
+    private val serialEventsListener = object : SerialEventsListener {
+        override fun onConnect(type: String, name: String) {
+            Intent().also { intent ->
+                intent.action = ACTION_CONNECTION_ESTABLISHED
+                intent.putExtra("connectionType", type)
+                intent.putExtra("name", name)
+                sendBroadcast(intent)
             }
+            updateNotification()
+        }
 
-            override fun onDisconnect(deviceName: String) {
-                Intent().also { intent ->
-                    intent.action = ACTION_CONNECTION_LOST
-                    intent.putExtra("connectionType", "usb")
-                    intent.putExtra("name", deviceName)
-                    sendBroadcast(intent)
-                }
-                updateNotification()
+        override fun onDisconnect(type: String, name: String) {
+            Intent().also { intent ->
+                intent.action = ACTION_CONNECTION_LOST
+                intent.putExtra("connectionType", type)
+                intent.putExtra("name", name)
+                sendBroadcast(intent)
             }
+            updateNotification()
+        }
 
-            override fun onMessageReceived(serialDevice: UsbSerialDevice, data: String) {
-                Intent().also { intent ->
-                    intent.action = ACTION_DATA_RECEIVED
-                    intent.putExtra("connectionType", "usb")
-                    intent.putExtra("name", serialDevice.portName)
-                    intent.putExtra("data", data)
-                    sendBroadcast(intent)
-                }
+        override fun onMessageReceived(type: String, name: String, data: String) {
+            Intent().also { intent ->
+                intent.action = ACTION_DATA_RECEIVED
+                intent.putExtra("connectionType", type)
+                intent.putExtra("name", name)
+                intent.putExtra("data", data)
+                sendBroadcast(intent)
             }
-        })
+        }
     }
 
-    private val bluetoothConnection: BluetoothConnection by lazy {
-        BluetoothConnection(this, object : BluetoothEvents {
-            override fun onConnect(mac: String) {
-                Intent().also { intent ->
-                    intent.action = ACTION_CONNECTION_ESTABLISHED
-                    intent.putExtra("connectionType", "bluetooth")
-                    intent.putExtra("name", mac)
-                    sendBroadcast(intent)
-                }
-                updateNotification()
-            }
+    private val usbConnection by lazy {
+        UsbConnection(this, serialEventsListener)
+    }
 
-            override fun onDisconnect(mac: String) {
-                Intent().also { intent ->
-                    intent.action = ACTION_CONNECTION_LOST
-                    intent.putExtra("connectionType", "bluetooth")
-                    intent.putExtra("name", mac)
-                    sendBroadcast(intent)
-                }
-                updateNotification()
-            }
-
-            override fun onMessageReceived(mac: String, data: String) {
-                Intent().also { intent ->
-                    intent.action = ACTION_DATA_RECEIVED
-                    intent.putExtra("connectionType", "bluetooth")
-                    intent.putExtra("name", mac)
-                    intent.putExtra("data", data)
-                    sendBroadcast(intent)
-                }
-            }
-        })
+    private val bluetoothConnection by lazy {
+        BluetoothConnection(this, serialEventsListener)
     }
 
     override fun onBind(intent: Intent): IBinder {

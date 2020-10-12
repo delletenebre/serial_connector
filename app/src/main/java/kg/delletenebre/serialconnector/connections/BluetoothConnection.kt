@@ -12,16 +12,11 @@ import com.github.douglasjunior.bluetoothclassiclibrary.BluetoothStatus
 import com.github.douglasjunior.bluetoothlowenergylibrary.BluetoothLeService
 import kg.delletenebre.serialconnector.App
 import kg.delletenebre.serialconnector.R
+import kg.delletenebre.serialconnector.SerialEventsListener
 import java.util.*
 
 
-interface BluetoothEvents {
-    fun onConnect(mac: String)
-    fun onDisconnect(mac: String)
-    fun onMessageReceived(mac: String, data: String)
-}
-
-class BluetoothConnection(private val context: Context, private val events: BluetoothEvents) {
+class BluetoothConnection(private val context: Context, private val events: SerialEventsListener) {
     private val bluetoothManager: BluetoothManager by lazy {
         context.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
     }
@@ -73,7 +68,7 @@ class BluetoothConnection(private val context: Context, private val events: Blue
                     if (bytes.isNotEmpty()) {
                         if (buffer.checkBytes(bytes)) {
                             buffer.commands.forEach {
-                                events.onMessageReceived(connectedDeviceMac, it)
+                                events.onMessageReceived(SERIAL_TYPE, connectedDeviceMac, it)
                             }
                             buffer.commands.clear()
                         }
@@ -85,12 +80,12 @@ class BluetoothConnection(private val context: Context, private val events: Blue
                         BluetoothStatus.NONE -> {
                             val disconnectedDeviceMac = connectedDeviceMac
                             connectedDeviceMac = ""
-                            events.onDisconnect(disconnectedDeviceMac)
+                            events.onDisconnect(SERIAL_TYPE, disconnectedDeviceMac)
                         }
 
                         BluetoothStatus.CONNECTED -> {
                             connectedDeviceMac = device.address
-                            events.onConnect(connectedDeviceMac)
+                            events.onConnect(SERIAL_TYPE, connectedDeviceMac)
                         }
 
                         else -> {
@@ -111,6 +106,10 @@ class BluetoothConnection(private val context: Context, private val events: Blue
             })
             connect(device)
         }
+    }
+
+    companion object {
+        private const val SERIAL_TYPE = "bluetooth"
     }
 //
 //    private fun onError(error: Throwable) {

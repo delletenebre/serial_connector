@@ -11,15 +11,10 @@ import android.util.Log
 import com.felhr.usbserial.UsbSerialDevice
 import kg.delletenebre.serialconnector.App
 import kg.delletenebre.serialconnector.BuildConfig
+import kg.delletenebre.serialconnector.SerialEventsListener
 
 
-interface UsbEvents {
-    fun onConnect(serialDevice: UsbSerialDevice)
-    fun onDisconnect(deviceName: String)
-    fun onMessageReceived(serialDevice: UsbSerialDevice, data: String)
-}
-
-class UsbConnection(private val context: Context, private val events: UsbEvents) {
+class UsbConnection(private val context: Context, private val events: SerialEventsListener) {
 
     val connections = mutableMapOf<String, UsbSerialDevice>()
     private val buffers = mutableMapOf<String, ConnectionBuffer>()
@@ -28,27 +23,23 @@ class UsbConnection(private val context: Context, private val events: UsbEvents)
         context.getSystemService(Context.USB_SERVICE) as UsbManager
     }
 
-    private val broadcastReceiver: BroadcastReceiver by lazy {
-        object : BroadcastReceiver() {
-            override fun onReceive(context: Context, intent: Intent) {
-                when (intent.action) {
-                    UsbManager.ACTION_USB_DEVICE_DETACHED -> {
-                        val usbDevice: UsbDevice? = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE)
-                        usbDevice?.let {
-                            disconnect(it.deviceName)
-                        }
+    private val broadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            when (intent.action) {
+                UsbManager.ACTION_USB_DEVICE_DETACHED -> {
+                    val usbDevice: UsbDevice? = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE)
+                    usbDevice?.let {
+                        disconnect(it.deviceName)
                     }
+                }
 
-                    ACTION_USB_PERMISSION -> {
-                        synchronized(this) {
-                            val device: UsbDevice? = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE)
-                            if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
-                                device?.let { usbDevice ->
-                                    val filterMatch = deviceNameFilter.find(usbDevice.deviceName)
-                                    filterMatch?.let {
-                                        connectTo(usbDevice)
-                                    }
-                                }
+                ACTION_USB_PERMISSION -> {
+                    val device: UsbDevice? = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE)
+                    if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
+                        device?.let { usbDevice ->
+                            val filterMatch = deviceNameFilter.find(usbDevice.deviceName)
+                            filterMatch?.let {
+                                connectTo(usbDevice)
                             }
                         }
                     }
@@ -88,16 +79,20 @@ class UsbConnection(private val context: Context, private val events: UsbEvents)
         deviceNameFilter = App.instance.getPreference("usb_connection_filter").toRegex()
 
         usbManager.deviceList.values.forEach { usbDevice ->
-            usbManager.requestPermission(usbDevice, permissionIntent)
+            if (usbManager.hasPermission(usbDevice)) {
+                connectTo(usbDevice)
+            } else {
+                usbManager.requestPermission(usbDevice, permissionIntent)
+            }
         }
     }
 
-    fun disconnect(portName: String) {
+    @Synchronized fun disconnect(portName: String) {
         if (connections.containsKey(portName)) {
             connections[portName]?.close()
             connections.remove(portName)
             buffers.remove(portName)
-            events.onDisconnect(portName)
+            events.onDisconnect(SERIAL_TYPE, portName)
         }
     }
 
@@ -108,7 +103,7 @@ class UsbConnection(private val context: Context, private val events: UsbEvents)
         context.unregisterReceiver(broadcastReceiver)
     }
 
-    fun connectTo(usbDevice: UsbDevice) {
+    @Synchronized fun connectTo(usbDevice: UsbDevice) {
         val deviceName = usbDevice.deviceName
         if (connections.containsKey(deviceName)) {
             disconnect(deviceName)
@@ -146,7 +141,7 @@ class UsbConnection(private val context: Context, private val events: UsbEvents)
                         buffers[deviceName]?.let {
                             if (it.checkBytes(bytes)) {
                                 it.commands.forEach { message ->
-                                    events.onMessageReceived(serialDevice, message)
+                                    events.onMessageReceived(SERIAL_TYPE, deviceName, message)
                                 }
                                 it.commands.clear()
                             }
@@ -156,12 +151,11 @@ class UsbConnection(private val context: Context, private val events: UsbEvents)
 
                 // Some Arduinos would need some sleep because firmware wait some time to
                 // know whether a new sketch is going to be uploaded or not
-                Thread.sleep(1000)
-                // TODO send broadcast device connected
+                // Thread.sleep(1000)
 //                        if (App.getInstance().getBooleanPreference("send_connection_state")) {
 //                            serialDevice.write((App.ACTION_CONNECTION_ESTABLISHED + "\n").toByteArray())
 //                        }
-                events.onConnect(serialDevice)
+                events.onConnect(SERIAL_TYPE, deviceName)
             }
         } catch (e: Exception) {
             Log.d("usb", "exception: ${e.localizedMessage}")
@@ -171,6 +165,7 @@ class UsbConnection(private val context: Context, private val events: UsbEvents)
     private fun getIntegerPreference(key: String) = App.instance.getPreference(key).toInt()
 
     companion object {
+        private const val SERIAL_TYPE = "usb"
         private const val ACTION_USB_PERMISSION = "${BuildConfig.APPLICATION_ID}.USB_PERMISSION"
     }
 }
