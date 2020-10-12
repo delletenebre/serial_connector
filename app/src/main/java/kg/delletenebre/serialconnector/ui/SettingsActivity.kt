@@ -39,7 +39,7 @@ class SettingsActivity : AppCompatActivity() {
             }
 
             findPreference<Preference>("help")?.setOnPreferenceClickListener {
-                val url = "https://github.com/delletenebre/serial_connector#настройки"
+                val url = "https://github.com/delletenebre/serial_connector/wiki"
                 val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
                 startActivity(browserIntent)
                 true
