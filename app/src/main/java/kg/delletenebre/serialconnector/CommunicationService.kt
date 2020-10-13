@@ -1,7 +1,10 @@
 package kg.delletenebre.serialconnector
 
 import android.app.*
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbManager
 import android.os.Binder
@@ -81,6 +84,20 @@ class CommunicationService : Service() {
         }
     }
 
+    private val broadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            when (intent.action) {
+                ACTION_SEND_MESSAGE -> {
+                    val message = intent.getStringExtra("message") ?: ""
+                    if (message.isNotEmpty()) {
+                        usbConnection.write(message)
+                        bluetoothConnection.write(message)
+                    }
+                }
+            }
+        }
+    }
+
     private val usbConnection by lazy {
         UsbConnection(this, serialEventsListener)
     }
@@ -104,6 +121,10 @@ class CommunicationService : Service() {
 
     override fun onCreate() {
         super.onCreate()
+        IntentFilter().also { intentFilter ->
+            intentFilter.addAction(ACTION_SEND_MESSAGE)
+            registerReceiver(broadcastReceiver, intentFilter)
+        }
         startForeground(NOTIFICATION_ID, notificationBuilder.build())
         updateNotification()
         usbConnection.connect()
@@ -111,6 +132,7 @@ class CommunicationService : Service() {
     }
 
     override fun onDestroy() {
+        unregisterReceiver(broadcastReceiver)
         usbConnection.destroy()
         bluetoothConnection.destroy()
         super.onDestroy()
@@ -150,6 +172,7 @@ class CommunicationService : Service() {
         const val ACTION_START_SERVICE = "$APP_ID.ACTION_START_SERVICE"
         const val ACTION_STOP_SERVICE = "$APP_ID.ACTION_STOP_SERVICE"
         const val ACTION_RESTART_SERVICE = "$APP_ID.ACTION_RESTART_SERVICE"
+        const val ACTION_SEND_MESSAGE = "$APP_ID.ACTION_SEND_MESSAGE"
 
         private const val NOTIFICATION_ID = 255
     }

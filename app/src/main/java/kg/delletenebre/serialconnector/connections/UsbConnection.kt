@@ -11,6 +11,7 @@ import android.util.Log
 import com.felhr.usbserial.UsbSerialDevice
 import kg.delletenebre.serialconnector.App
 import kg.delletenebre.serialconnector.BuildConfig
+import kg.delletenebre.serialconnector.CommunicationService
 import kg.delletenebre.serialconnector.SerialEventsListener
 
 
@@ -44,6 +45,13 @@ class UsbConnection(private val context: Context, private val events: SerialEven
                         }
                     }
                 }
+
+                CommunicationService.ACTION_SEND_MESSAGE -> {
+                    val message = intent.getStringExtra("message") ?: ""
+                    if (message.isNotEmpty()) {
+                        write(message)
+                    }
+                }
             }
         }
     }
@@ -66,6 +74,7 @@ class UsbConnection(private val context: Context, private val events: SerialEven
         IntentFilter().also { intentFilter ->
             intentFilter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED)
             intentFilter.addAction(ACTION_USB_PERMISSION)
+            intentFilter.addAction(CommunicationService.ACTION_SEND_MESSAGE)
             context.registerReceiver(broadcastReceiver, intentFilter)
         }
     }
@@ -84,6 +93,12 @@ class UsbConnection(private val context: Context, private val events: SerialEven
             } else {
                 usbManager.requestPermission(usbDevice, permissionIntent)
             }
+        }
+    }
+
+    fun write(message: String) {
+        connections.values.forEach {
+            it.write(message.toByteArray())
         }
     }
 

@@ -4,11 +4,8 @@ import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.util.Log
-import com.github.douglasjunior.bluetoothclassiclibrary.BluetoothClassicService
-import com.github.douglasjunior.bluetoothclassiclibrary.BluetoothConfiguration
-import com.github.douglasjunior.bluetoothclassiclibrary.BluetoothService
+import com.github.douglasjunior.bluetoothclassiclibrary.*
 import com.github.douglasjunior.bluetoothclassiclibrary.BluetoothService.OnBluetoothEventCallback
-import com.github.douglasjunior.bluetoothclassiclibrary.BluetoothStatus
 import com.github.douglasjunior.bluetoothlowenergylibrary.BluetoothLeService
 import kg.delletenebre.serialconnector.App
 import kg.delletenebre.serialconnector.R
@@ -20,6 +17,8 @@ class BluetoothConnection(private val context: Context, private val events: Seri
     private val bluetoothManager: BluetoothManager by lazy {
         context.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
     }
+    private var bluetoothService: BluetoothService? = null
+
     var connectedDeviceMac = ""
     val buffer = ConnectionBuffer()
 
@@ -27,6 +26,13 @@ class BluetoothConnection(private val context: Context, private val events: Seri
         val selectedMac = App.instance.getPreference("bluetooth_device", "")
         if (selectedMac.isNotEmpty()) {
             connectTo(selectedMac)
+        }
+    }
+
+    fun write(message: String) {
+        bluetoothService?.let {
+            val writer = BluetoothWriter(it)
+            writer.write(message)
         }
     }
 
@@ -61,7 +67,7 @@ class BluetoothConnection(private val context: Context, private val events: Seri
         }
 
         BluetoothService.init(config)
-        BluetoothService.getDefaultInstance()?.apply {
+        bluetoothService = BluetoothService.getDefaultInstance()?.apply {
             disconnect()
             setOnEventCallback(object : OnBluetoothEventCallback {
                 override fun onDataRead(bytes: ByteArray, length: Int) {
